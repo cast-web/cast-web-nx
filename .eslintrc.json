@@ -14,6 +14,26 @@
     "plugins": [
         "@typescript-eslint"
     ],
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".ts"]
+            }
+        }
+    },
     "rules": {
+        "no-unused-vars": "warn",
+        "padded-blocks": "off",
+        "lines-between-class-members": "off",
+        "arrow-parens": "off",
+        "import/prefer-default-export": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "ts": "never",
+                "js": "never"
+            }
+        ]
     }
 }
