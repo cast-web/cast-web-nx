@@ -1,14 +1,11 @@
 import * as tls from 'tls';
 import { Server as TLSServer, TlsOptions, TLSSocket } from 'tls';
-import * as debug from 'debug';
 import { CastMessage } from '../protocol/proto-buf';
 import { PacketStream } from '../common/packet-stream';
 import { TypedEmitter } from '../common/typed-emitter';
 import { Client } from './client';
-import {
-  CastMessageBaseServer,
-  CastMessageServer,
-} from '../protocol/google-cast';
+import { CastMessageBaseServer, CastMessageServer } from '../protocol/google-cast';
+import { logger } from '../common/logger';
 
 export interface ServerMessageEvents {
   error: (error: Error) => void;
@@ -47,12 +44,12 @@ export class Server extends TypedEmitter<ServerMessageEvents> {
 
   private onServerListen(callback?: () => any) {
     const addr = this.tlsServer.address();
-    // debug('tlsServer listening on %s:%d', addr?.address, addr?.port);
+    logger.debug('onServerListen', addr);
     if (callback) callback();
   }
 
   private onServerSecureConnection(socket: TLSSocket) {
-    // debug('connection from %s:%d', socket.remoteAddress, socket.remotePort);
+    logger.debug('onServerSecureConnection', socket);
     const packetStream = new PacketStream(socket);
     const clientId = Server.genClientId(socket);
 
@@ -66,13 +63,13 @@ export class Server extends TypedEmitter<ServerMessageEvents> {
   }
 
   private onServerShutdown() {
-    debug('tlsServer shutting down');
+    logger.debug('onServerShutdown');
     this.tlsServer.removeListener('secureConnection', this.onServerSecureConnection);
     this.emit('close');
   }
 
   private onServerError(err: Error) {
-    // debug('error: %s %j', err.message, err);
+    logger.debug('onServerError', err);
     this.emit('error', err);
   }
 
@@ -92,18 +89,7 @@ export class Server extends TypedEmitter<ServerMessageEvents> {
       payloadUtf8: isBuffer ? undefined : data,
     };
 
-    // debug(
-    // eslint-disable-next-line max-len
-    //   'send message: clientId=%s protocolVersion=%s sourceId=%s destinationId=%s namespace=%s data=%s',
-    //   clientId,
-    //   message.protocolVersion,
-    //   message.sourceId,
-    //   message.destinationId,
-    //   message.namespace,
-    //   (message.payloadType === 1) // BINARY
-    //     ? util.inspect(message.payloadBinary)
-    //     : message.payloadUtf8,
-    // );
+    logger.debug('send', message);
 
     // TODO: fix clientId typing
     const serverClient = this.serverClients.get(baseCastMessage.clientId || '');

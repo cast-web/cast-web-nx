@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
-// import * as debug from 'debug';
 import { Client } from './client';
-import { CastMessageBaseClient, CastMessageClient } from '../protocol/google-cast';
+import { CastMessageClient } from '../protocol/google-cast';
 
 export type ChannelEncoding = 'JSON';
 

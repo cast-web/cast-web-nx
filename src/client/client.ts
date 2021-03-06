@@ -1,16 +1,11 @@
-import { EventEmitter } from 'events';
 import * as tls from 'tls';
-import * as debug from 'debug';
 import { TLSSocket } from 'tls';
-// import * as util from 'util';
 import { Channel, ChannelEncoding } from './channel';
 import { PacketStream } from '../common/packet-stream';
 import { CastMessage } from '../protocol/proto-buf';
-import {
-  CastMessageClientId, CastMessageServer, CastMessageClient, CastMessageBaseClient,
-} from '../protocol/google-cast';
-import { BaseCastMessage } from '../../lib/server';
+import { CastMessageClient, CastMessageBaseClient } from '../protocol/google-cast';
 import { TypedEmitter } from '../common/typed-emitter';
+import { logger } from '../common/logger';
 
 export interface ClientEvents {
   error: (error: Error) => void;
@@ -44,11 +39,11 @@ export class Client extends TypedEmitter<ClientEvents> {
 
     if (callback) this.once('connect', callback);
 
-    // debug('connecting to %s:%d ...', options.host, options.port);
+    logger.debug('connect', options);
 
     this.socket = tls.connect(options, () => {
       this.packetStream = new PacketStream(this.socket);
-      // debug('connected');
+      logger.debug('connected', options);
       this.emit('connect');
     });
 
@@ -61,16 +56,7 @@ export class Client extends TypedEmitter<ClientEvents> {
     // TODO: type this in and refactor()
     const message = CastMessage.parse(buffer) as unknown as CastMessageClient;
 
-    // debug(
-    //   'recv message: protocolVersion=%s sourceId=%s destinationId=%s namespace=%s data=%s',
-    //   message.protocolVersion,
-    //   message.sourceId,
-    //   message.destinationId,
-    //   message.namespace,
-    //   (message.payloadType === 1) // BINARY
-    //     ? util.inspect(message.payloadBinary)
-    //     : message.payloadUtf8,
-    // );
+    logger.debug('onPacketStreamPacket', message);
     if (message.protocolVersion !== 0) { // CASTV2_1_0
       this.emit('error', new Error(`Unsupported protocol version: ${message.protocolVersion}`));
       this.close();
@@ -81,12 +67,12 @@ export class Client extends TypedEmitter<ClientEvents> {
   }
 
   private onSocketError(err: Error): void {
-    // debug('error: %s %j', err.message, err);
+    logger.debug('onSocketError', err);
     this.emit('error', err);
   }
 
   private onSocketClose(): void {
-    // debug('connection closed');
+    logger.debug('onSocketClose');
     this?.socket?.removeListener('error', this.onSocketError);
     this.socket = undefined;
 
@@ -96,7 +82,7 @@ export class Client extends TypedEmitter<ClientEvents> {
   }
 
   public close() {
-    debug('closing connection ...');
+    logger.debug('close');
     // using socket.destroy here because socket.end caused stalled connection
     // in case of dongles going brutally down without a chance to FIN/ACK
     this?.socket?.destroy();
@@ -113,16 +99,7 @@ export class Client extends TypedEmitter<ClientEvents> {
       payloadUtf8: isBuffer ? undefined : data,
     };
 
-    // debug(
-    //   'send message: protocolVersion=%s sourceId=%s destinationId=%s namespace=%s data=%s',
-    //   message.protocolVersion,
-    //   message.sourceId,
-    //   message.destinationId,
-    //   message.namespace,
-    //   (message.payloadType === 1) // BINARY
-    //     ? util.inspect(message.payloadBinary)
-    //     : message.payloadUtf8,
-    // );
+    logger.debug('send', message);
 
     const buffer = CastMessage.serialize(message);
     this?.packetStream?.send(buffer);
