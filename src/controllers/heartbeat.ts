@@ -55,7 +55,7 @@ export class HeartbeatController extends JsonController {
     this.send({ type: 'PING' });
   }
 
-  public start(intervalValue: number): void {
+  public start(intervalValue?: number): void {
     if (intervalValue) { this.intervalValue = intervalValue; }
 
     this.ping();

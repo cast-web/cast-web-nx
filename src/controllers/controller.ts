@@ -43,7 +43,7 @@ export class Controller extends TypedEmitter<ControllerEvents> {
     this.channel.send(data);
   }
 
-  protected close(): void {
+  public close(): void {
     this.channel.close();
   }
 }

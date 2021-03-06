@@ -25,14 +25,14 @@ export class ReceiverController extends RequestResponseController {
 
   // protocol
 
-  private getStatus(callback: any) {
+  public getStatus(callback: any) {
     this.request({ type: 'GET_STATUS' }, (err, response) => {
       if (err) return callback(err);
       callback(null, response.status);
     });
   }
 
-  private getAppAvailability(appId: string, callback?: any) {
+  public getAppAvailability(appId: string, callback?: any) {
     // TODO: type this
     const data = {
       type: 'GET_APP_AVAILABILITY',
@@ -45,14 +45,14 @@ export class ReceiverController extends RequestResponseController {
     });
   }
 
-  private getSessions(callback: any) {
+  public getSessions(callback: any) {
     this.getStatus((err: Error, status: any) => {
       if (err) return callback(err);
       callback(null, status.applications || []);
     });
   }
 
-  private launch(appId: string, callback: any) {
+  public launch(appId: string, callback: any) {
     this.request({ type: 'LAUNCH', appId }, (err, response) => {
       if (err) return callback(err);
       if (response.type === 'LAUNCH_ERROR') {
@@ -64,14 +64,14 @@ export class ReceiverController extends RequestResponseController {
 
   // controls
 
-  private getVolume(callback: any) {
+  public getVolume(callback: any) {
     this.getStatus((err: Error, status: any) => {
       if (err) return callback(err);
       callback(null, status.volume);
     });
   }
 
-  private setVolume(options: any, callback: any) {
+  public setVolume(options: any, callback: any) {
     // TODO: type this
     const data = {
       type: 'SET_VOLUME',
@@ -84,7 +84,7 @@ export class ReceiverController extends RequestResponseController {
     });
   }
 
-  private stop(sessionId: string, callback: any) {
+  public stop(sessionId: string, callback: any) {
     this.request({ type: 'STOP', sessionId }, (err, response) => {
       if (err) return callback(err);
       callback(null, response.status.applications || []);

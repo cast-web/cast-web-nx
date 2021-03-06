@@ -46,7 +46,7 @@ export class MediaController extends RequestResponseController {
     });
   }
 
-  private getStatus(callback?: any) {
+  public getStatus(callback?: any) {
     this.request({ type: 'GET_STATUS' }, (err, response) => {
       if (err) return callback(err);
       const status = response.status[0];
@@ -57,19 +57,19 @@ export class MediaController extends RequestResponseController {
 
   // controls
 
-  private stop(callback?: any) {
+  public stop(callback?: any) {
     this.sessionRequest({ type: 'STOP' }, callback);
   }
 
-  private play(callback?: any) {
+  public play(callback?: any) {
     this.sessionRequest({ type: 'PLAY' }, callback);
   }
 
-  private pause(callback?: any) {
+  public pause(callback?: any) {
     this.sessionRequest({ type: 'PAUSE' }, callback);
   }
 
-  private seek(currentTime: any, callback: any) {
+  public seek(currentTime: any, callback: any) {
     const data = {
       type: 'SEEK',
       currentTime,
@@ -126,7 +126,7 @@ export class MediaController extends RequestResponseController {
   // Load a queue of items to play (playlist)
   // See https://developers.google.com/cast/docs/reference/chrome/chrome.cast.media.QueueLoadRequest
 
-  private queueLoad(items: any[], options: any, callback?: any) {
+  public queueLoad(items: any[], options: any, callback?: any) {
     if (typeof options === 'function' || typeof options === 'undefined') {
       callback = options;
       options = {};
@@ -164,7 +164,7 @@ export class MediaController extends RequestResponseController {
     });
   }
 
-  private queueInsert(items: any[], options: any, callback?: any) {
+  public queueInsert(items: any[], options: any, callback?: any) {
     if (typeof options === 'function' || typeof options === 'undefined') {
       callback = options;
       options = {};
@@ -183,7 +183,7 @@ export class MediaController extends RequestResponseController {
     this.sessionRequest(data, callback);
   }
 
-  private queueRemove(itemIds: string[], options: any, callback?: any) {
+  public queueRemove(itemIds: string[], options: any, callback?: any) {
     if (typeof options === 'function' || typeof options === 'undefined') {
       callback = options;
       options = {};
@@ -200,7 +200,7 @@ export class MediaController extends RequestResponseController {
     this.sessionRequest(data, callback);
   }
 
-  private queueReorder(itemIds: string[], options: any, callback?: any) {
+  public queueReorder(itemIds: string[], options: any, callback?: any) {
     if (typeof options === 'function' || typeof options === 'undefined') {
       callback = options;
       options = {};
@@ -218,7 +218,7 @@ export class MediaController extends RequestResponseController {
     this.sessionRequest(data, callback);
   }
 
-  private queueUpdate(items: string[], options: any, callback?: any) {
+  public queueUpdate(items: string[], options: any, callback?: any) {
     if (typeof options === 'function' || typeof options === 'undefined') {
       callback = options;
       options = {};
