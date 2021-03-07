@@ -1,3 +1,5 @@
+import Controller from './controllers/base';
+
 module.exports.Controller = require('./lib/controllers/controller');
 module.exports.JsonController = require('./lib/controllers/json');
 module.exports.RequestResponseController = require('./lib/controllers/request-response');

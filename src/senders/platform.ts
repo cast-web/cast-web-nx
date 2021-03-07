@@ -4,6 +4,7 @@ import { ConnectionController } from '../controllers/connection';
 import { HeartbeatController } from '../controllers/heartbeat';
 import { ReceiverController } from '../controllers/receiver';
 import { Application } from './application';
+import { ErrorStatusCallback } from '../controllers/base';
 
 export class PlatformSender extends Sender {
 
@@ -118,7 +119,7 @@ export class PlatformSender extends Sender {
     this?.receiver?.setVolume(volume, callback);
   }
 
-  private getVolume(callback: any) {
+  private getVolume(callback: ErrorStatusCallback<number>) {
     this?.receiver?.getVolume(callback);
   }
 }

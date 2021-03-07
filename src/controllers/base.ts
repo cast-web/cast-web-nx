@@ -2,6 +2,10 @@ import { Client } from 'cast-protocol/lib/client/client';
 import { Channel, ChannelEncoding } from 'cast-protocol/lib/client/channel';
 import { TypedEmitter } from '../common/typed-emitter';
 
+export type ErrorCallback = (error: Error) => void;
+export type StatusCallback = (status: any) => void;
+export type ErrorStatusCallback<T> = (error: Error | undefined, status?: T) => void;
+
 export interface ControllerEvents {
   // TODO: type this
   // TODO: this is really broken, requestId/callback only required in ./request-response
@@ -14,7 +18,7 @@ export interface ControllerEvents {
   status: (status: any) => void;
 }
 
-export class Controller extends TypedEmitter<ControllerEvents> {
+export class BaseController extends TypedEmitter<ControllerEvents> {
 
   private channel: Channel;
 
@@ -46,4 +50,11 @@ export class Controller extends TypedEmitter<ControllerEvents> {
   public close(): void {
     this.channel.close();
   }
+}
+
+export class BaseJsonController extends BaseController {
+  constructor(client: Client, sourceId: string, destinationId: string, namespace: string) {
+    super(client, sourceId, destinationId, namespace, 'JSON');
+  }
+
 }

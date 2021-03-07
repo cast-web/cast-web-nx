@@ -1,8 +1,9 @@
 import { Client } from 'cast-protocol/lib/client/client';
 import { JsonController } from './json';
 import Timeout = NodeJS.Timeout;
+import { BaseJsonController } from './base';
 
-export class HeartbeatController extends JsonController {
+export class HeartbeatController extends BaseJsonController {
 
   private readonly DEFAULT_INTERVAL = 5; // seconds
   private readonly TIMEOUT_FACTOR = 3; // timeouts after 3 intervals

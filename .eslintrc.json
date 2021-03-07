@@ -33,7 +33,9 @@
             {
                 "ts": "never",
                 "js": "never"
-            }
-        ]
+           }
+        ],
+        "no-plusplus": "off",
+        "consistent-return": "off"
     }
 }

@@ -1,5 +1,6 @@
 import { Client } from 'cast-protocol/lib/client/client';
 import { RequestResponseController } from './request-response';
+import { ErrorStatusCallback } from './base';
 
 export class ReceiverController extends RequestResponseController {
 
@@ -25,14 +26,15 @@ export class ReceiverController extends RequestResponseController {
 
   // protocol
 
-  public getStatus(callback: any) {
+  // TODO: Type this!
+  public getStatus(callback: ErrorStatusCallback<any>) {
     this.request({ type: 'GET_STATUS' }, (err, response) => {
       if (err) return callback(err);
-      callback(null, response.status);
+      callback(undefined, response.status);
     });
   }
 
-  public getAppAvailability(appId: string, callback?: any) {
+  public getAppAvailability(appId: string, callback: ErrorStatusCallback<any>) {
     // TODO: type this
     const data = {
       type: 'GET_APP_AVAILABILITY',
@@ -41,37 +43,37 @@ export class ReceiverController extends RequestResponseController {
 
     this.request(data, (err, response) => {
       if (err) return callback(err);
-      callback(null, response.availability);
+      callback(undefined, response.availability);
     });
   }
 
-  public getSessions(callback: any) {
-    this.getStatus((err: Error, status: any) => {
+  public getSessions(callback: ErrorStatusCallback<any>) {
+    this.getStatus((err, status) => {
       if (err) return callback(err);
-      callback(null, status.applications || []);
+      callback(undefined, status.applications || []);
     });
   }
 
-  public launch(appId: string, callback: any) {
+  public launch(appId: string, callback: ErrorStatusCallback<any>) {
     this.request({ type: 'LAUNCH', appId }, (err, response) => {
       if (err) return callback(err);
       if (response.type === 'LAUNCH_ERROR') {
         return callback(new Error(`Launch failed. Reason: ${response.reason}`));
       }
-      callback(null, response.status.applications || []);
+      callback(undefined, response.status.applications || []);
     });
   }
 
   // controls
 
-  public getVolume(callback: any) {
-    this.getStatus((err: Error, status: any) => {
+  public getVolume(callback: ErrorStatusCallback<number>) {
+    this.getStatus((err, status) => {
       if (err) return callback(err);
-      callback(null, status.volume);
+      callback(undefined, status.volume);
     });
   }
 
-  public setVolume(options: any, callback: any) {
+  public setVolume(options: any, callback: ErrorStatusCallback<any>) {
     // TODO: type this
     const data = {
       type: 'SET_VOLUME',
@@ -80,14 +82,14 @@ export class ReceiverController extends RequestResponseController {
 
     this.request(data, (err, response) => {
       if (err) return callback(err);
-      callback(null, response.status.volume);
+      callback(undefined, response.status.volume);
     });
   }
 
-  public stop(sessionId: string, callback: any) {
+  public stop(sessionId: string, callback: ErrorStatusCallback<any>) {
     this.request({ type: 'STOP', sessionId }, (err, response) => {
       if (err) return callback(err);
-      callback(null, response.status.applications || []);
+      callback(undefined, response.status.applications || []);
     });
   }
 }

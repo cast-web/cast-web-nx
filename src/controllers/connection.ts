@@ -1,7 +1,7 @@
 import { Client } from 'cast-protocol/lib/client/client';
-import { JsonController } from './json';
+import { BaseJsonController } from './base';
 
-export class ConnectionController extends JsonController {
+export class ConnectionController extends BaseJsonController {
 
   constructor(client: Client, sourceId: string, destinationId: string) {
     super(client, sourceId, destinationId, 'urn:x-cast:com.google.cast.tp.connection');

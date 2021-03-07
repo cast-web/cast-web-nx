@@ -1,26 +1,26 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { JsonController } from './json';
+import { BaseJsonController, ErrorStatusCallback } from './base';
 
-export class RequestResponseController extends JsonController {
+export class RequestResponseController extends BaseJsonController {
 
   private lastRequestId = 0;
 
-  constructor(client: Client, sourceId: string, destinationId: string, namespace: string) {
-    super(client, sourceId, destinationId, namespace);
-  }
-
   // TODO: type the callback and the data (!) this is really important
-  protected request(data: any, callback: (...args: any) => any): void {
-    const requestId = ++this.lastRequestId;
+  protected request<T>(data: any, callback: ErrorStatusCallback<T | any>): void {
+    const requestId = this.lastRequestId++;
+    const payloadData = { ...data, requestId };
 
     this.on('message', (response, broadcast) => this.onRequestResponseMessage(response, broadcast, requestId, callback));
 
-    data.requestId = requestId;
-    this.send(data);
+    this.send(payloadData);
   }
 
   // TODO: type callback
-  private onRequestResponseMessage(response: any, broadcast: any, requestId?: number, callback?: (...args: any) => any) {
+  private onRequestResponseMessage<T>(
+    response: any,
+    broadcast: any,
+    requestId?: number,
+    callback?: ErrorStatusCallback<T>
+  ): void {
     if (response.requestId === requestId) {
       this.removeListener('message', this.onRequestResponseMessage);
 
@@ -29,7 +29,7 @@ export class RequestResponseController extends JsonController {
       }
 
       delete response.requestId;
-      if (callback) { callback(null, response); }
+      if (callback) { callback(undefined, response); }
     }
   }
 }
