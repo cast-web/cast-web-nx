@@ -1,29 +1,48 @@
-import { EventEmitter } from 'events';
-import { Client } from './client';
-import { CastMessageClient } from '../protocol/google-cast';
+// import { Client } from './client';
+import {
+  CastMessageClient,
+  ConnectionChannel,
+  HeartbeatChannel, MediaChannel,
+  Namespaces, ReceiverChannel,
+} from '../protocol/google-cast';
+import { TypedEmitter } from '../common/typed-emitter';
+import { logger } from '../common/logger';
 
 export type ChannelEncoding = 'JSON';
 
-export class Channel extends EventEmitter {
+export interface ChannelEvents<
+  ChannelType extends ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel
+> {
+  error: (error: Error) => void;
+  message: (message: ChannelType['message'], broadcast: boolean) => void;
+  close: () => void;
+  connect: () => void;
+}
+
+export class Channel<
+  ChannelType extends ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel
+> extends TypedEmitter<ChannelEvents<ChannelType>> {
 
   constructor(
-    private bus: Client,
+    private bus: any,
     // TODO: refactor BaseCastMessage
     private sourceId: string,
     private destinationId: string,
-    private namespace: string,
+    private namespace: Namespaces,
     private encoding: ChannelEncoding,
   ) {
     super();
 
-    this.bus.on('message', this.onBusMessage);
-    this.once('close', this.onClose);
+    this.bus.on('message', (message: any, broadcast: any) => this.onBusMessage(message));
+    this.once('close', () => this.onClose());
   }
 
   private onBusMessage(castMessage: CastMessageClient) {
     const {
       sourceId, destinationId, namespace, payloadType, payloadBinary, payloadUtf8,
     } = castMessage;
+
+    logger.debug('onBusMessage:', castMessage);
 
     if (sourceId !== this.destinationId) return;
     if (destinationId !== this.sourceId && destinationId !== '*') return;
@@ -35,7 +54,8 @@ export class Channel extends EventEmitter {
     this.bus.removeListener('message', this.onBusMessage);
   }
 
-  public send(data: any): void {
+  public send(data: ChannelType['data']): void {
+    logger.debug('send:', data);
     const { sourceId, destinationId, namespace } = this;
     this.bus.send(
       { sourceId, destinationId, namespace },

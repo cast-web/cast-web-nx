@@ -1,19 +1,21 @@
+import { TLSSocket } from 'tls';
 import { TypedEmitter } from './typed-emitter';
 
-export class PacketStream extends TypedEmitter<any> {
+export interface PacketStreamEvents {
+  packet: (packet: any) => void;
+}
+
+export class PacketStream extends TypedEmitter<PacketStreamEvents> {
   private WAITING_HEADER = 0;
   private WAITING_PACKET = 1;
-  private state = this.WAITING_PACKET;
+  private state = this.WAITING_HEADER;
   private packetLength = 0;
 
   constructor(
-    // TODO: add typing
-    private stream: any,
+    private stream: TLSSocket,
   ) {
     super();
-    // let state = WAITING_HEADER;
-
-    this.stream.on('readable', this.onStreamReadable);
+    this.stream.on('readable', () => this.onStreamReadable());
   }
 
   private onStreamReadable(): void {
@@ -30,6 +32,7 @@ export class PacketStream extends TypedEmitter<any> {
           this.state = this.WAITING_PACKET;
           break;
         case this.WAITING_PACKET:
+          // logger.warn('not waiting, stream:', this.stream);
           // eslint-disable-next-line no-case-declarations
           const packet = this.stream.read(this.packetLength);
           if (packet === null) return;

@@ -3,13 +3,18 @@ import { TLSSocket } from 'tls';
 import { Channel, ChannelEncoding } from './channel';
 import { PacketStream } from '../common/packet-stream';
 import { CastMessage } from '../protocol/proto-buf';
-import { CastMessageClient, CastMessageBaseClient } from '../protocol/google-cast';
+import {
+  CastMessageClient,
+  CastMessageBaseClient,
+  Namespaces,
+  CastMessages,
+  ConnectionChannel, HeartbeatChannel, MediaChannel, ReceiverChannel,
+} from '../protocol/google-cast';
 import { TypedEmitter } from '../common/typed-emitter';
 import { logger } from '../common/logger';
 
 export interface ClientEvents {
   error: (error: Error) => void;
-  // eslint-disable-next-line max-len
   message: (message: CastMessageClient) => void;
   close: () => void;
   connect: () => void;
@@ -17,8 +22,8 @@ export interface ClientEvents {
 
 export interface ClientConnectOptions {
   host: string;
-  port: number;
-  rejectUnauthorized: boolean;
+  port?: number;
+  rejectUnauthorized?: boolean;
 }
 
 export class Client extends TypedEmitter<ClientEvents> {
@@ -37,19 +42,20 @@ export class Client extends TypedEmitter<ClientEvents> {
     // options.port = options.port || 8009;
     // options.rejectUnauthorized = false;
 
-    if (callback) this.once('connect', callback);
+    this.once('connect', () => callback());
 
-    logger.debug('connect', options);
+    logger.info('connect', options);
 
     this.socket = tls.connect(options, () => {
-      this.packetStream = new PacketStream(this.socket);
-      logger.debug('connected', options);
+      this.packetStream = new PacketStream(this.socket as TLSSocket);
+      // TODO:
+      this.packetStream?.on('packet', (buf: any) => this.onPacketStreamPacket(buf)); // TODO: maybe move this line?
+      logger.info('connected', options);
       this.emit('connect');
     });
 
-    this?.packetStream?.on('packet', this.onPacketStreamPacket); // TODO: maybe move this line?
-    this.socket.on('error', this.onSocketError);
-    this.socket.once('close', this.onSocketClose);
+    this.socket.on('error', (err: Error) => this.onSocketError(err));
+    this.socket.once('close', () => this.onSocketClose());
   }
 
   private onPacketStreamPacket(buffer: any) {
@@ -67,12 +73,12 @@ export class Client extends TypedEmitter<ClientEvents> {
   }
 
   private onSocketError(err: Error): void {
-    logger.debug('onSocketError', err);
+    logger.error('onSocketError', err);
     this.emit('error', err);
   }
 
   private onSocketClose(): void {
-    logger.debug('onSocketClose');
+    logger.info('onSocketClose');
     this?.socket?.removeListener('error', this.onSocketError);
     this.socket = undefined;
 
@@ -82,13 +88,14 @@ export class Client extends TypedEmitter<ClientEvents> {
   }
 
   public close() {
-    logger.debug('close');
+    logger.info('close');
     // using socket.destroy here because socket.end caused stalled connection
     // in case of dongles going brutally down without a chance to FIN/ACK
     this?.socket?.destroy();
   }
 
-  public send(baseCastMessage: CastMessageBaseClient, data: any) {
+  // TODO: data: looks like encoded data already...
+  public send(baseCastMessage: CastMessageBaseClient, data: CastMessages) {
     const isBuffer = Buffer.isBuffer(data);
     const message: CastMessageClient = {
       ...baseCastMessage,
@@ -105,12 +112,14 @@ export class Client extends TypedEmitter<ClientEvents> {
     this?.packetStream?.send(buffer);
   }
 
-  public createChannel(
+  public createChannel<
+    ChannelType extends ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel
+  >(
     sourceId: string,
     destinationId: string,
-    namespace: string,
+    namespace: Namespaces,
     encoding: ChannelEncoding,
-  ): Channel {
-    return new Channel(this, sourceId, destinationId, namespace, encoding);
+  ): Channel<ChannelType> {
+    return new Channel<ChannelType>(this, sourceId, destinationId, namespace, encoding);
   }
 }

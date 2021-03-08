@@ -8,11 +8,11 @@
   "types": "lib/index.d.ts",
   "dependencies": {
     "protobufjs": "^6.8.8",
-    "winston": "^3.3.3",
-    "typed-emitter": "^1.3.1"
+    "typed-emitter": "^1.3.1",
+    "winston": "^3.3.3"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc & cp ./src/protocol/cast_channel.proto ./lib/protocol",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "echo 'Testing...'",
     "prepare": "yarn run build",
@@ -33,6 +33,7 @@
     "lib/**/*"
   ],
   "devDependencies": {
+    "@types/chromecast-caf-receiver": "^5.0.13",
     "@types/node": "^14.14.31",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
