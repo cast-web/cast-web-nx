@@ -1,82 +1,63 @@
-castv2
+protocol
 ======
 
-[![NPM version](https://badge.fury.io/js/castv2.svg)](http://badge.fury.io/js/castv2)
-[![Dependency Status](https://img.shields.io/david/thibauts/node-castv2.svg)](https://david-dm.org/thibauts/node-castv2)
-[![npm](https://img.shields.io/npm/dm/castv2.svg?maxAge=2592000)]()
+### An implementation of the Google Cast protocol v2
 
-### An implementation of the Chromecast CASTV2 protocol
+This is a fork of [node-castv2](https://github.com/thibauts/node-castv2 "node-castv2") that aims to improve on the following:
 
-This module is an implementation of the Chromecast CASTV2 protocol over TLS. The internet is very sparse on information about the new Chromecast protocol so big props go to [github.com/vincentbernat](https://github.com/vincentbernat) and his [nodecastor](https://github.com/vincentbernat/nodecastor) module that helped me start off on the right foot and save a good deal of time in my research.
+- ✅ TS typing
+- ✅ promised based API (where it makes sense)
+- ✅ unified code styling
+- ✅ full ES6 syntax
+- ⏳ unit testing
+- ✨ and more to come!
 
 The module provides both a `Client` and a `Server` implementation of the low-level protocol. The server is (sadly) pretty useless because device authentication gets in the way for now (and maybe for good). The client still allows you to connect and exchange messages with a Chromecast dongle without any restriction. 
+The `Client` is untested and probably doesn't work. I don't see the point in refactoring it.
 
 Installation
 ------------
 
-```bash
-$ npm install castv2
-```
-
-On windows, to avoid native modules dependencies, use
-
-```bash
-$ npm install castv2 --no-optional
-```
+TODO:
 
 Usage
 -----
 
-```js
-var Client = require('castv2').Client;
-var mdns = require('mdns');
+```ts
+import { Client } from 'cast-protocol';
+import {
+  ConnectionChannel,
+  HeartbeatChannel,
+  ReceiverChannel,
+  Namespaces,
+} from 'cast-protocol/lib/protocol/google-cast';
 
-var browser = mdns.createBrowser(mdns.tcp('googlecast'));
+const client = new Client();
+// wait for the client to connect
+await client.connect({ host: '192.168.1.101' });
 
-browser.on('serviceUp', function(service) {
-  console.log('found device %s at %s:%d', service.name, service.addresses[0], service.port);
-  ondeviceup(service.addresses[0]);
-  browser.stop();
+// create various namespace handlers
+const connection = client.createChannel<ConnectionChannel>('sender-0', 'receiver-0', Namespaces.Connection, 'JSON');
+const heartbeat = client.createChannel<HeartbeatChannel>('sender-0', 'receiver-0', Namespaces.Heartbeat, 'JSON');
+const receiver = client.createChannel<ReceiverChannel>('sender-0', 'receiver-0', Namespaces.Receiver, 'JSON');
+
+// define event callbacks
+receiver.on('message', function(data, broadcast) {
+  if(data.type = 'RECEIVER_STATUS') {
+    console.log(data.status);
+  }
 });
 
-browser.start();
+// connect to the receiver
+connection.send({ type: 'CONNECT' });
 
-function ondeviceup(host) {
+// start heartbeating
+setInterval(() => heartbeat.send({ type: 'PING' }), 5000);
 
-  var client = new Client();
-  client.connect(host, function() {
-    // create various namespace handlers
-    var connection = client.createChannel('sender-0', 'receiver-0', 'urn:x-cast:com.google.cast.tp.connection', 'JSON');
-    var heartbeat  = client.createChannel('sender-0', 'receiver-0', 'urn:x-cast:com.google.cast.tp.heartbeat', 'JSON');
-    var receiver   = client.createChannel('sender-0', 'receiver-0', 'urn:x-cast:com.google.cast.receiver', 'JSON');
-
-    // establish virtual connection to the receiver
-    connection.send({ type: 'CONNECT' });
-
-    // start heartbeating
-    setInterval(function() {
-      heartbeat.send({ type: 'PING' });
-    }, 5000);
-
-    // launch YouTube app
-    receiver.send({ type: 'LAUNCH', appId: 'YouTube', requestId: 1 });
-
-    // display receiver status updates
-    receiver.on('message', function(data, broadcast) {
-      if(data.type = 'RECEIVER_STATUS') {
-        console.log(data.status);
-      }
-    });
-  });
-
-}
 ```
 
-Run it with the following command to get a full trace of the messages exchanged with the dongle.
-
-```bash 
-$ DEBUG=* node example.js
-```
+Debugging
+-----
 
 Protocol description
 --------------------

@@ -28,16 +28,8 @@ export interface ClientConnectOptions {
 }
 
 export class Client extends TypedEmitter<ClientEvents> {
-  // private { CastMessage } = protocol;
-  // util.inherits(Client, EventEmitter);
-
   private socket: TLSSocket | undefined;
   private packetStream: PacketStream | undefined;
-
-  // constructor() {
-  //   super();
-  //   // EventEmitter.call(this);
-  // }
 
   public async connect(options: ClientConnectOptions): Promise<void> {
     const clientConnectOptions: ClientConnectOptions = {
