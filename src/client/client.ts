@@ -1,5 +1,6 @@
 import * as tls from 'tls';
 import { TLSSocket } from 'tls';
+import { once } from 'events';
 import { Channel, ChannelEncoding } from './channel';
 import { PacketStream } from '../common/packet-stream';
 import { CastMessage } from '../protocol/proto-buf';
@@ -38,24 +39,27 @@ export class Client extends TypedEmitter<ClientEvents> {
   //   // EventEmitter.call(this);
   // }
 
-  public connect(options: ClientConnectOptions, callback: () => void) {
-    // options.port = options.port || 8009;
-    // options.rejectUnauthorized = false;
+  public async connect(options: ClientConnectOptions): Promise<void> {
+    const clientConnectOptions: ClientConnectOptions = {
+      ...options,
+      port: options?.port || 8009,
+      rejectUnauthorized: options?.rejectUnauthorized || false,
+    };
 
-    this.once('connect', () => callback());
+    logger.info('connecting', options);
 
-    logger.info('connect', options);
-
-    this.socket = tls.connect(options, () => {
+    this.socket = tls.connect(clientConnectOptions, () => {
       this.packetStream = new PacketStream(this.socket as TLSSocket);
       // TODO:
       this.packetStream?.on('packet', (buf: any) => this.onPacketStreamPacket(buf)); // TODO: maybe move this line?
-      logger.info('connected', options);
+      logger.info('connected', clientConnectOptions);
       this.emit('connect');
     });
 
     this.socket.on('error', (err: Error) => this.onSocketError(err));
     this.socket.once('close', () => this.onSocketClose());
+
+    return once(this, 'connect') as unknown as Promise<void>;
   }
 
   private onPacketStreamPacket(buffer: any) {
