@@ -1,15 +1,30 @@
 import { TLSSocket } from 'tls';
 import { TypedEmitter } from './typed-emitter';
+import { logger } from './logger';
 
 export interface PacketStreamEvents {
   packet: (packet: any) => void;
 }
 
 export class PacketStream extends TypedEmitter<PacketStreamEvents> {
-  private WAITING_HEADER = 0;
-  private WAITING_PACKET = 1;
-  private state = this.WAITING_HEADER;
-  private packetLength = 0;
+
+  /**
+   * To whom it may concern.
+   * I really don't know what was going on here in the pre ES6 / ts version.
+   * There was a weird while(true) loop, that was switching between parsing
+   * header (first 4 bytes) or body (header.length).
+   * So get the length of the packet from the header, then parse the message itself.
+   * Easy.
+   * But why in a never ending loop? One would assume coz the stream doesn't end.
+   * Let me elaborate: hhe loop was triggered by the streams * 'onReadable' event.
+   * This according to the docs is fired whenever there is a new packet
+   * on the stream that can be parsed.
+   * So... if this is triggered, there is only ONE packet to be parsed.
+   * Making this whole loop thing pointless.
+   * So should this ever become a problem with packets not coming through.
+   * This might be the issue.
+   * @param stream
+   */
 
   constructor(
     private stream: TLSSocket,
@@ -19,34 +34,25 @@ export class PacketStream extends TypedEmitter<PacketStreamEvents> {
   }
 
   private onStreamReadable(): void {
-    // TODO: tf?
-    while (true) {
-      // TODO: default case
-      // eslint-disable-next-line default-case
-      switch (this.state) {
-        case this.WAITING_HEADER:
-          // eslint-disable-next-line no-case-declarations
-          const header = this.stream.read(4);
-          if (header === null) return;
-          this.packetLength = header.readUInt32BE(0);
-          this.state = this.WAITING_PACKET;
-          break;
-        case this.WAITING_PACKET:
-          // logger.warn('not waiting, stream:', this.stream);
-          // eslint-disable-next-line no-case-declarations
-          const packet = this.stream.read(this.packetLength);
-          if (packet === null) return;
-          this.emit('packet', packet);
-          this.state = this.WAITING_HEADER;
-          break;
-      }
-    }
+    const header = this.stream.read(4);
+    const packetLength = PacketStream.getPacketLength(header);
+    const packet = PacketStream.parseWaitingPacket(this.stream, packetLength);
+
+    logger.debug('onStreamReadable:', { header, packetLength, packet });
+    if (packet) { this.emit('packet', packet); }
+  }
+
+  private static getPacketLength(header: any): number | undefined {
+    if (header === null) return;
+    return header.readUInt32BE(0);
+  }
+
+  private static parseWaitingPacket(stream: TLSSocket, length?: number): any | undefined {
+    return length ? stream.read(length) : undefined;
   }
 
   public send(buf: any): void {
-    // TODO: remove new Buffer
-    // eslint-disable-next-line no-buffer-constructor
-    const header = new Buffer(4);
+    const header = Buffer.alloc(4);
     header.writeUInt32BE(buf.length, 0);
     this.stream.write(Buffer.concat([header, buf]));
   }

@@ -15,7 +15,8 @@ export enum Namespaces {
 // MESSAGE-TYPES
 
 export type ConnectionMessageTypes =
-  'CONNECT';
+  'CONNECT' |
+  'CLOSE';
 
 export type HeartbeatMessageTypes =
   'PING' |
@@ -41,23 +42,23 @@ export interface BaseStatus {
   'requestId': number,
 }
 
-export interface MediaStatus extends MediaStatusCaf {
+export interface MediaStatus extends BaseStatus, MediaStatusCaf {
   // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.messages.MediaStatus
+}
+
+export interface ReceiverStatusApplication {
+  'appId': string,
+  'displayName': string,
+  'namespaces': Namespaces[],
+  'sessionId': string,
+  'statusText': string,
+  'transportId': string,
 }
 
 export interface ReceiverStatus extends BaseStatus {
   'type': 'RECEIVER_STATUS',
   'status': {
-    'applications': [
-      {
-        'appId': string,
-        'displayName': string,
-        'namespaces': Namespaces[],
-        'sessionId': string,
-        'statusText': string,
-        'transportId': string,
-      },
-    ],
+    'applications': ReceiverStatusApplication[],
     'isActiveInput': boolean,
     'volume': MediaStatus['volume'],
   },
@@ -153,3 +154,5 @@ export interface ReceiverChannel {
   data: ReceiverData,
   message: ReceiverMessage,
 }
+
+export type BaseChannel = ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel;

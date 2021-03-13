@@ -7,7 +7,6 @@ import { CastMessage } from '../protocol/proto-buf';
 import {
   CastMessageClient,
   CastMessageBaseClient,
-  Namespaces,
   CastMessages,
   ConnectionChannel, HeartbeatChannel, MediaChannel, ReceiverChannel,
 } from '../protocol/google-cast';
@@ -42,8 +41,7 @@ export class Client extends TypedEmitter<ClientEvents> {
 
     this.socket = tls.connect(clientConnectOptions, () => {
       this.packetStream = new PacketStream(this.socket as TLSSocket);
-      // TODO:
-      this.packetStream?.on('packet', (buf: any) => this.onPacketStreamPacket(buf)); // TODO: maybe move this line?
+      this.packetStream?.on('packet', buf => this.onPacketStreamPacket(buf)); // TODO: maybe move this line?
       logger.info('connected', clientConnectOptions);
       this.emit('connect');
     });
@@ -90,14 +88,12 @@ export class Client extends TypedEmitter<ClientEvents> {
     this?.socket?.destroy();
   }
 
-  // TODO: data: looks like encoded data already...
   public send(baseCastMessage: CastMessageBaseClient, data: CastMessages) {
     const isBuffer = Buffer.isBuffer(data);
     const message: CastMessageClient = {
       ...baseCastMessage,
       protocolVersion: 0, // CASTV2_1_0
       payloadType: isBuffer ? 1 : 0,
-      // TODO: does this work?
       payloadBinary: isBuffer ? data : undefined,
       payloadUtf8: isBuffer ? undefined : data,
     };
@@ -111,9 +107,9 @@ export class Client extends TypedEmitter<ClientEvents> {
   public createChannel<
     ChannelType extends ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel
   >(
-    sourceId: string,
-    destinationId: string,
-    namespace: Namespaces,
+    sourceId: CastMessageBaseClient['sourceId'],
+    destinationId: CastMessageBaseClient['destinationId'],
+    namespace: CastMessageBaseClient['namespace'],
     encoding: ChannelEncoding,
   ): Channel<ChannelType> {
     return new Channel<ChannelType>(this, sourceId, destinationId, namespace, encoding);

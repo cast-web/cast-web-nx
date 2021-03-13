@@ -12,7 +12,7 @@
     "winston": "^3.3.3"
   },
   "scripts": {
-    "build": "tsc & cp ./src/protocol/cast_channel.proto ./lib/protocol",
+    "build": "tsc && cp ./src/protocol/cast_channel.proto ./lib/protocol",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "echo 'Testing...'",
     "prepare": "yarn run build",

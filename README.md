@@ -10,6 +10,7 @@ This is a fork of [node-castv2](https://github.com/thibauts/node-castv2 "node-ca
 - ✅ unified code styling
 - ✅ full ES6 syntax
 - ⏳ unit testing
+- ⏳ tsdoc
 - ✨ and more to come!
 
 The module provides both a `Client` and a `Server` implementation of the low-level protocol. The server is (sadly) pretty useless because device authentication gets in the way for now (and maybe for good). The client still allows you to connect and exchange messages with a Chromecast dongle without any restriction. 
@@ -106,7 +107,7 @@ message CastMessage {
 
 The original .proto file can also be found in the Chromium source tree.
 
-Using this structure the sender and receiver *platforms* (eg. The Chrome browser and the Chromecast device) as well as sender and receiver *applications* (eg. a Chromecast receiver app and a Chrome browser sender app for YouTube) communicate on *channels*.
+Using this structure the sender and receiver *platforms* (e.g. The Chrome browser and the Chromecast device) as well as sender and receiver *applications* (eg. a Chromecast receiver app and a Chrome browser sender app for YouTube) communicate on *channels*.
 
 Senders and receivers identify themselves through IDs : `source_id` and `destination_id`. The sending platform (eg. the Chrome browser) usually uses `sender-0`. The receiving platform (the Chromecast dongle) uses `receiver-0`. Other senders and receivers use identifiers such as `sender-sdqo7ozi6s4a`, `client-4637` or `web-4`. We'll dig into that later.
 

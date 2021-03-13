@@ -1,5 +1,5 @@
-// import { Client } from './client';
 import {
+  CastMessageBaseClient,
   CastMessageClient,
   ConnectionChannel,
   HeartbeatChannel, MediaChannel,
@@ -7,6 +7,7 @@ import {
 } from '../protocol/google-cast';
 import { TypedEmitter } from '../common/typed-emitter';
 import { logger } from '../common/logger';
+import { Client } from './client';
 
 export type ChannelEncoding = 'JSON';
 
@@ -24,16 +25,15 @@ export class Channel<
 > extends TypedEmitter<ChannelEvents<ChannelType>> {
 
   constructor(
-    private bus: any,
-    // TODO: refactor BaseCastMessage
-    private sourceId: string,
-    private destinationId: string,
-    private namespace: Namespaces,
+    private bus: Client,
+    private sourceId: CastMessageBaseClient['sourceId'],
+    private destinationId: CastMessageBaseClient['destinationId'],
+    private namespace: CastMessageBaseClient['namespace'],
     private encoding: ChannelEncoding,
   ) {
     super();
 
-    this.bus.on('message', (message: any, broadcast: any) => this.onBusMessage(message));
+    this.bus.on('message', (message: any) => this.onBusMessage(message));
     this.once('close', () => this.onClose());
   }
 
