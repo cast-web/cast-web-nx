@@ -7,26 +7,29 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
+    "cast-protocol": "file:../protocol",
     "castv2": "~0.1.4",
-    "winston": "^3.3.3",
-    "typed-emitter": "^1.3.1"
+    "typed-emitter": "^1.3.1",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
-    "array-find": "^1.0.0",
-    "dns-txt": "^2.0.2",
-    "mocha": "^3.2.0",
-    "multicast-dns": "^6.1.0",
-    "util": "^0.10.3",
     "@types/node": "^14.14.31",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
+    "array-find": "^1.0.0",
+    "dns-txt": "^2.0.2",
     "eslint": "^7.21.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "typescript": "^4.2.2"
+    "mocha": "^3.2.0",
+    "multicast-dns": "^6.1.0",
+    "typescript": "^4.2.2",
+    "util": "^0.10.3"
   },
   "scripts": {
     "build": "tsc",
+    "build:protocol": "cd ../protocol && yarn build && cd ../client && yarn upgrade cast-protocol",
+    "build:all": "yarn build:protocol && yarn build",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "node_modules/.bin/mocha",
     "prepublishOnly": "yarn test && yarn run lint",

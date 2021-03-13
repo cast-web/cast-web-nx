@@ -1,12 +1,19 @@
 import { Client } from 'cast-protocol/lib/client/client';
+import { ReceiverChannel } from 'cast-protocol/lib/protocol/google-cast';
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
 import { HeartbeatController } from '../controllers/heartbeat';
 import { ReceiverController } from '../controllers/receiver';
 import { Application } from './application';
-import { ErrorStatusCallback } from '../controllers/base';
+import { ErrorCallback, ErrorStatusCallback } from '../controllers/base';
+import { ReceiverStatusApplication } from 'cast-protocol/src/protocol/google-cast';
 
-export class PlatformSender extends Sender {
+export interface PlatformSenderEvents {
+  error: ErrorCallback;
+  status: (data: ReceiverChannel['message']['status']) => void;
+}
+
+export class PlatformSender extends Sender<PlatformSenderEvents> {
 
   private connection: ConnectionController | undefined;
   private heartbeat: HeartbeatController | undefined;
@@ -35,31 +42,26 @@ export class PlatformSender extends Sender {
     this.emit('error', new Error('Device timeout'));
   }
 
-  private onReceiverStatus(status: any) {
+  private onReceiverStatus(status: ReceiverChannel['message']['status']) {
     this.emit('status', status);
   }
 
-  private connect(options: any, callback: any) {
+  public async connect(options: any): Promise<void> {
     this?.client?.on('error', this.onClientError);
 
-    this?.client?.connect(options, () => {
-      // TODO: fix this typing weirdness
-      // @ts-ignore
-      this.connection = this.createController(ConnectionController);
-      // @ts-ignore
-      this.heartbeat = this.createController(HeartbeatController);
-      // @ts-ignore
-      this.receiver = this.createController(ReceiverController);
+    await this?.client?.connect(options);
+    // TODO: fix this typing weirdness
+    this.connection = new ConnectionController(this?.client, this?.senderId, this?.receiverId);
+    this.heartbeat = new HeartbeatController(this?.client, this?.senderId, this?.receiverId);
+    this.receiver = new ReceiverController(this?.client, this?.senderId, this?.receiverId);
 
-      this?.receiver?.on('status', this.onReceiverStatus);
-      this?.client?.once('close', this.onClientClose);
+    this?.receiver?.on('status', status => this.onReceiverStatus(status));
+    this?.client?.once('close', this.onClientClose);
 
-      this?.heartbeat?.once('timeout', this.onHeartbeatTimeout);
+    this?.heartbeat?.once('timeout', this.onHeartbeatTimeout);
 
-      this?.connection?.connect();
-      this?.heartbeat?.start();
-      callback();
-    });
+    this?.connection?.connect();
+    this?.heartbeat?.start();
   }
 
   // TODO: rename this?
@@ -77,7 +79,7 @@ export class PlatformSender extends Sender {
 
   private getAppAvailability(appId: string, callback: any) {
     // eslint-disable-next-line consistent-return
-    this?.receiver?.getAppAvailability(appId, (err: Error, availability: any) => {
+    this?.receiver?.getAppAvailability(appId, (err?: Error, availability?: any) => {
       if (err) return callback(err);
       // TODO: oh boi...
       // eslint-disable-next-line guard-for-in,no-restricted-syntax,no-undef
@@ -89,11 +91,19 @@ export class PlatformSender extends Sender {
     });
   }
 
-  private join(session: any, application: Application, callback: any) {
-    if (this.client) { callback(null, new Application(this.client, session)); }
+  public join<ApplicationType extends Application>(
+    session: ReceiverStatusApplication,
+    // TODO: typing
+    application: { new (...args: any): ApplicationType },
+    callback: ErrorStatusCallback<ApplicationType>,
+  ) {
+    if (this.client) {
+      // eslint-disable-next-line new-cap
+      callback(undefined, new application(this.client, session));
+    }
   }
 
-  private launch(application: Application, callback: any) {
+  public launch(application: typeof Application, callback: any) {
     // TODO: this is defined somewhere...
     // @ts-ignore
     // eslint-disable-next-line consistent-return
@@ -105,14 +115,14 @@ export class PlatformSender extends Sender {
       const filtered = sessions.filter(session => session.appId === application.APP_ID);
       const session = filtered.shift();
 
-      this.join(session, application, callback);
+      // this.join(session, application, callback);
     });
   }
 
   private stop(application: Application, callback: any) {
     const { session } = application;
-    application.close();
-    this?.receiver?.stop(session.sessionId, callback);
+    application.applicationClose();
+    this?.receiver?.stop(session?.sessionId || '', callback);
   }
 
   private setVolume(volume: number, callback: any) {

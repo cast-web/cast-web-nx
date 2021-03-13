@@ -1,9 +1,18 @@
 import { Client } from 'cast-protocol/lib/client/client';
-import { JsonController } from './json';
-import Timeout = NodeJS.Timeout;
-import { BaseJsonController } from './base';
+import { HeartbeatChannel, Namespaces } from 'cast-protocol/lib/protocol/google-cast';
+import { setTimeout } from 'timers';
+import { BaseController, BaseControllerMessage } from './base';
 
-export class HeartbeatController extends BaseJsonController {
+type Timeout = ReturnType<typeof setTimeout>;
+
+export interface HeartbeatControllerEvents {
+  pong: () => void;
+  timeout: () => void;
+}
+
+export class HeartbeatController extends BaseController<
+  HeartbeatChannel, HeartbeatControllerEvents
+> {
 
   private readonly DEFAULT_INTERVAL = 5; // seconds
   private readonly TIMEOUT_FACTOR = 3; // timeouts after 3 intervals
@@ -12,16 +21,15 @@ export class HeartbeatController extends BaseJsonController {
   private timeout: Timeout | undefined;
   private intervalValue = this.DEFAULT_INTERVAL;
 
-  constructor(client: Client, sourceId: string, destinationId: string) {
-    // TODO: type the namespaces
-    super(client, sourceId, destinationId, 'urn:x-cast:com.google.cast.tp.heartbeat');
+  constructor(client?: Client, sourceId?: string, destinationId?: string) {
+    super(client, sourceId, destinationId, Namespaces.Heartbeat);
 
-    this.on('message', this.onHeartbeatMessage);
+    this.on('message', message => this.onHeartbeatMessage(message));
     this.once('close', this.onHeartbeatClose);
   }
 
-  private onHeartbeatMessage(data: any, broadcast: any) {
-    if (data.type === 'PONG') {
+  private onHeartbeatMessage(message: BaseControllerMessage<HeartbeatChannel['message']>) {
+    if (message.data.type === 'PONG') {
       this.emit('pong');
     }
   }

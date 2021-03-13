@@ -1,22 +1,29 @@
 import { Client } from 'cast-protocol/lib/client/client';
+import { Namespaces, ReceiverChannel } from 'cast-protocol/lib/protocol/google-cast';
 import { RequestResponseController } from './request-response';
-import { ErrorStatusCallback } from './base';
+import { BaseControllerMessage, ErrorStatusCallback, StatusCallback } from './base';
 
-export class ReceiverController extends RequestResponseController {
+export interface ReceiverControllerEvents {
+  status: StatusCallback<ReceiverChannel['message']['status']>;
+}
 
-  constructor(client: Client, sourceId: string, destinationId: string) {
-    super(client, sourceId, destinationId, 'urn:x-cast:com.google.cast.receiver');
+export class ReceiverController extends RequestResponseController<
+  ReceiverChannel, ReceiverControllerEvents
+> {
 
-    this.on('message', this.onReceiverMessage);
-    this.once('close', this.onReceiverClose);
+  constructor(client?: Client, sourceId?: string, destinationId?: string) {
+    super(client, sourceId, destinationId, Namespaces.Receiver);
+
+    this.on('message', message => this.onReceiverMessage(message));
+    this.once('close', () => this.onReceiverClose());
   }
 
   // events
 
-  private onReceiverMessage(data: any, broadcast: any) {
-    if (!broadcast) return;
-    if (data.type === 'RECEIVER_STATUS') {
-      this.emit('status', data.status);
+  private onReceiverMessage(message: BaseControllerMessage<ReceiverChannel['message']>) {
+    if (!message.broadcast) return;
+    if (message.data.type === 'RECEIVER_STATUS') {
+      this.emit('status', message.data.status);
     }
   }
 

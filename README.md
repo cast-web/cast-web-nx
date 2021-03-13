@@ -2,6 +2,18 @@ castv2-client
 =============
 ### A Chromecast client based on the new (CASTV2) protocol
 
+This is a fork of [node-castv2-client](https://github.com/thibauts/node-castv2-client "node-castv2") that aims to improve on the following:
+
+- ✅ TS typing
+- ⏳ promised based API (where it makes sense)
+- ✅ unified code styling
+- ✅ full ES6 syntax
+- ⏳ unit testing
+- ⏳ tsdoc
+- ✨ and more to come!
+
+The api is still subject to change.
+
 This module implements a Chromecast client over the new (CASTV2) protocol. A sender app for the `DefaultMediaReceiver` application is provided, as well as an `Application` base class and implementations of the basic protocols (see the `controllers` directory) that should make implementing custom senders a breeze.
 
 This implementation tries to stay close and true to the protocol. For details about protocol internals please see [https://github.com/thibauts/node-castv2](https://github.com/thibauts/node-castv2#protocol-description). 

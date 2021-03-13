@@ -1,17 +1,24 @@
 import { Client } from 'cast-protocol/lib/client/client';
-import { BaseJsonController } from './base';
+import { ConnectionChannel, Namespaces } from 'cast-protocol/lib/protocol/google-cast';
+import { BaseController, BaseControllerMessage } from './base';
 
-export class ConnectionController extends BaseJsonController {
+export interface ConnectionControllerEvents {
+  disconnect: () => void;
+}
 
-  constructor(client: Client, sourceId: string, destinationId: string) {
-    super(client, sourceId, destinationId, 'urn:x-cast:com.google.cast.tp.connection');
+export class ConnectionController extends BaseController<
+  ConnectionChannel, ConnectionControllerEvents
+> {
 
-    this.on('message', this.onConnectionControllerMessage);
+  constructor(client?: Client, sourceId?: string, destinationId?: string) {
+    super(client, sourceId, destinationId, Namespaces.Connection);
+
+    this.on('message', (message) => this.onConnectionControllerMessage(message));
     this.once('close', this.onConnectionControllerClose);
   }
 
-  private onConnectionControllerMessage(data: any, broadcast: any): void {
-    if (data.type === 'CLOSE') {
+  private onConnectionControllerMessage(message: BaseControllerMessage<any>): void {
+    if (message.data.type === 'CLOSE') {
       this.emit('disconnect');
     }
   }
@@ -28,5 +35,3 @@ export class ConnectionController extends BaseJsonController {
     this.send({ type: 'CLOSE' });
   }
 }
-
-module.exports = ConnectionController;
