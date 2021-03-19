@@ -1,1 +1,5 @@
 **/node_modules
+*.pem
+*.sig
+*.swp
+.idea

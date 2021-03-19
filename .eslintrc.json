@@ -28,8 +28,26 @@
     },
     {
       "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nrwl/nx/javascript"],
-      "rules": {}
+      "extends": [
+	      "plugin:@nrwl/nx/javascript",
+	      "airbnb-base"
+      ],
+      "rules": {
+        "consistent-return": "off",
+        "no-unused-vars": "warn",
+        "padded-blocks": "off",
+        "lines-between-class-members": "off",
+        "arrow-parens": "off",
+        "import/prefer-default-export": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "ts": "never",
+                "js": "never"
+            }
+        ]
+      }
     }
   ]
 }

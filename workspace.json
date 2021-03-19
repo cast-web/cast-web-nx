@@ -35,7 +35,8 @@
             "packageJson": "libs/protocol/package.json",
             "main": "libs/protocol/src/index.ts",
             "assets": [
-              "libs/protocol/*.md"
+              "libs/protocol/*.md",
+              "libs/protocol/src/lib/protocol/*.proto"
             ]
           }
         }
