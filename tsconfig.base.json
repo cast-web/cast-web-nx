@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@cast-web/protocol": ["libs/protocol/src/index.ts"]
+      "@cast-web/protocol": ["libs/protocol/src/index.ts"],
+      "@cast-web/client": ["libs/client/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

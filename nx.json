@@ -15,5 +15,5 @@
       "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
     }
   },
-  "projects": { "protocol": { "tags": [] } }
+  "projects": { "protocol": { "tags": [] }, "client": { "tags": [] } }
 }
