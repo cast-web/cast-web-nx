@@ -1,9 +1,47 @@
 {
-  
-  
   "version": 2,
-  
-  "projects": {},
+  "projects": {
+    "protocol": {
+      "root": "libs/protocol",
+      "sourceRoot": "libs/protocol/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/protocol/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/protocol"
+          ],
+          "options": {
+            "jestConfig": "libs/protocol/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/protocol",
+            "tsConfig": "libs/protocol/tsconfig.lib.json",
+            "packageJson": "libs/protocol/package.json",
+            "main": "libs/protocol/src/index.ts",
+            "assets": [
+              "libs/protocol/*.md"
+            ]
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "defaultCollection": "@nrwl/workspace"
   }
