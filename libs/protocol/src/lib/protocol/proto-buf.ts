@@ -1,5 +1,6 @@
 import * as protobufjs from 'protobufjs';
 import { Root, Type } from 'protobufjs';
+import * as Path from 'path';
 
 // typing
 
@@ -35,7 +36,13 @@ const getProtoBufFunctions = (message: Messages) => ({
   parse: (data: any) => getProtobufMessageExtension(message).decode(data),
 });
 
-protobufjs.load(`${__dirname}/cast_channel.proto`, onProtoBufLoad);
+protobufjs.load(
+  Path.resolve(
+    Path.parse(require.resolve('./proto-buf.ts')).dir,
+    './cast_channel.proto',
+  ),
+  onProtoBufLoad
+);
 
 // export interfaces
 
