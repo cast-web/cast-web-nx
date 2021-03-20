@@ -1,5 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { ReceiverStatusApplication } from 'cast-protocol/src/protocol/google-cast';
+import { Client, ReceiverStatusApplication } from '@cast-web/protocol';
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
 import { ErrorCallback } from '../controllers/base';

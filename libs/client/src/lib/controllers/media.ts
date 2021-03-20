@@ -1,5 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { MediaChannel, Namespaces } from 'cast-protocol/lib/protocol/google-cast';
+import { Client, MediaChannel, Namespaces   } from '@cast-web/protocol';
 import { RequestResponseController } from './request-response';
 import { BaseControllerMessage, StatusCallback } from './base';
 import { logger } from '../common/logger';

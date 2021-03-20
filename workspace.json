@@ -36,7 +36,11 @@
             "main": "libs/protocol/src/index.ts",
             "assets": [
               "libs/protocol/*.md",
-              "libs/protocol/src/lib/protocol/*.proto"
+	      {
+		"input": "./libs/protocol/src/lib/protocol",
+		"glob": "cast_channel.proto",
+		"output": "./src/lib/protocol"
+	      }
             ]
           }
         }

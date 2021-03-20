@@ -1,5 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { HeartbeatChannel, Namespaces } from 'cast-protocol/lib/protocol/google-cast';
+import { Client, HeartbeatChannel, Namespaces } from '@cast-web/protocol';
 import { setTimeout } from 'timers';
 import { BaseController, BaseControllerMessage } from './base';
 

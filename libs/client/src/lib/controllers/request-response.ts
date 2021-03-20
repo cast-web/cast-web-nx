@@ -1,4 +1,4 @@
-import { BaseChannel } from 'cast-protocol/lib/protocol/google-cast';
+import { BaseChannel } from '@cast-web/protocol';
 import { BaseController, BaseControllerMessage, ErrorStatusCallback } from './base';
 import { logger } from '../common/logger';
 

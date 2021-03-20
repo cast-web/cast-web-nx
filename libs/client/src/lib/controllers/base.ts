@@ -1,6 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { Channel, ChannelEncoding } from 'cast-protocol/lib/client/channel';
-import { BaseChannel, Namespaces } from 'cast-protocol/lib/protocol/google-cast';
+import { Client, Channel, ChannelEncoding, BaseChannel, Namespaces } from '@cast-web/protocol';
 import { TypedEmitter } from '../common/typed-emitter';
 import { logger } from '../common/logger';
 

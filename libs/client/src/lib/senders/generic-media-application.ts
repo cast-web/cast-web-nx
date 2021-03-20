@@ -1,6 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { MediaChannel } from 'cast-protocol/lib/protocol/google-cast';
-import { ReceiverStatusApplication } from 'cast-protocol/src/protocol/google-cast';
+import { Client, MediaChannel, ReceiverStatusApplication } from '@cast-web/protocol';
 import { Application } from './application';
 import { MediaController } from '../controllers/media';
 import { logger } from '../common/logger';

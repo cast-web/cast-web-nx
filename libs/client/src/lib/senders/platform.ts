@@ -1,12 +1,10 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { ReceiverChannel } from 'cast-protocol/lib/protocol/google-cast';
+import { Client, ReceiverChannel, ReceiverStatusApplication } from '@cast-web/protocol';
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
 import { HeartbeatController } from '../controllers/heartbeat';
 import { ReceiverController } from '../controllers/receiver';
 import { Application } from './application';
 import { ErrorCallback, ErrorStatusCallback } from '../controllers/base';
-import { ReceiverStatusApplication } from 'cast-protocol/src/protocol/google-cast';
 
 export interface PlatformSenderEvents {
   error: ErrorCallback;

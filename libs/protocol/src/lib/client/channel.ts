@@ -2,8 +2,9 @@ import {
   CastMessageBaseClient,
   CastMessageClient,
   ConnectionChannel,
-  HeartbeatChannel, MediaChannel,
-  Namespaces, ReceiverChannel,
+  HeartbeatChannel,
+  MediaChannel,
+  ReceiverChannel,
 } from '../protocol/google-cast';
 import { TypedEmitter } from '../common/typed-emitter';
 import { logger } from '../common/logger';

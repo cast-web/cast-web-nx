@@ -1,4 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
+import { Client } from '@cast-web/protocol';
 import { MediaController } from '../controllers/media';
 import { Application } from './application';
 

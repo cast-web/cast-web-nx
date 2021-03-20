@@ -3,3 +3,5 @@
 *.sig
 *.swp
 .idea
+.DS_Store
+**/dist

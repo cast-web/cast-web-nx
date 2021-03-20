@@ -1,5 +1,4 @@
-import { Client } from 'cast-protocol/lib/client/client';
-import { ConnectionChannel, Namespaces } from 'cast-protocol/lib/protocol/google-cast';
+import { Client, ConnectionChannel, Namespaces  } from '@cast-web/protocol';
 import { BaseController, BaseControllerMessage } from './base';
 
 export interface ConnectionControllerEvents {

@@ -1,5 +1,5 @@
 import * as tls from 'tls';
-import { Server as TLSServer, TlsOptions, TLSSocket } from 'tls';
+import { Server as TLSServer, TLSSocket } from 'tls';
 import { CastMessage } from '../protocol/proto-buf';
 import { PacketStream } from '../common/packet-stream';
 import { TypedEmitter } from '../common/typed-emitter';
@@ -18,10 +18,10 @@ export class Server extends TypedEmitter<ServerMessageEvents> {
   private readonly tlsServer: TLSServer;
   private serverClients = new Map<string, Client>();
 
-  constructor(options: TlsOptions) {
+  constructor(options: { allowHalfOpen?: boolean, pauseOnConnect?: boolean }) {
     super();
 
-    this.tlsServer = new tls.Server(options);
+    this.tlsServer = new tls.Server(options, undefined);
   }
 
   private listen(port: string, host: string, callback?: () => any) {
