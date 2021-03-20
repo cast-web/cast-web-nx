@@ -18,6 +18,7 @@
   "projects": {
     "protocol": { "tags": [] },
     "client": { "tags": [] },
-    "types": { "tags": [] }
+    "types": { "tags": [] },
+    "client-demo": { "tags": [] }
   }
 }
