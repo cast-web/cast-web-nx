@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { MediaStatus as MediaStatusCaf } from 'chromecast-caf-receiver/cast.framework.messages';
 
 // NAMESPACES

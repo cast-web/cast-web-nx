@@ -1,4 +1,5 @@
-import { Client, MediaChannel, ReceiverStatusApplication } from '@cast-web/protocol';
+import { Client } from '@cast-web/protocol';
+import { MediaChannel, ReceiverStatusApplication } from '@cast-web/types';
 import { Application } from './application';
 import { MediaController } from '../controllers/media';
 import { logger } from '../common/logger';

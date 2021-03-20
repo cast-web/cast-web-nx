@@ -1,4 +1,5 @@
-import { Client, Channel, ChannelEncoding, BaseChannel, Namespaces } from '@cast-web/protocol';
+import { Client, Channel, ChannelEncoding } from '@cast-web/protocol';
+import { BaseChannel, Namespaces } from '@cast-web/types';
 import { TypedEmitter } from '../common/typed-emitter';
 import { logger } from '../common/logger';
 

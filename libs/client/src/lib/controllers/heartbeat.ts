@@ -1,4 +1,5 @@
-import { Client, HeartbeatChannel, Namespaces } from '@cast-web/protocol';
+import { Client } from '@cast-web/protocol';
+import { HeartbeatChannel, Namespaces } from '@cast-web/types';
 import { setTimeout } from 'timers';
 import { BaseController, BaseControllerMessage } from './base';
 

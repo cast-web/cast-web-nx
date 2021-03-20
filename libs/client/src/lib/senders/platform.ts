@@ -1,4 +1,5 @@
-import { Client, ReceiverChannel, ReceiverStatusApplication } from '@cast-web/protocol';
+import { Client } from '@cast-web/protocol';
+import { ReceiverChannel, ReceiverStatusApplication } from '@cast-web/types'
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
 import { HeartbeatController } from '../controllers/heartbeat';

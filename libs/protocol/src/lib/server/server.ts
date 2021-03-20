@@ -4,7 +4,7 @@ import { CastMessage } from '../protocol/proto-buf';
 import { PacketStream } from '../common/packet-stream';
 import { TypedEmitter } from '../common/typed-emitter';
 import { Client } from './client';
-import { CastMessageBaseServer, CastMessageServer } from '../protocol/google-cast';
+import { CastMessageServer, CastMessageBaseServer } from '@cast-web/types';
 import { logger } from '../common/logger';
 
 export interface ServerMessageEvents {

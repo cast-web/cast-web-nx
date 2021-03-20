@@ -1,4 +1,5 @@
-import { Client, MediaChannel, Namespaces   } from '@cast-web/protocol';
+import { Client } from '@cast-web/protocol';
+import { MediaChannel, Namespaces } from '@cast-web/types';
 import { RequestResponseController } from './request-response';
 import { BaseControllerMessage, StatusCallback } from './base';
 import { logger } from '../common/logger';

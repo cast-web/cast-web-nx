@@ -1,4 +1,4 @@
-import { BaseChannel } from '@cast-web/protocol';
+import { BaseChannel } from '@cast-web/types';
 import { BaseController, BaseControllerMessage, ErrorStatusCallback } from './base';
 import { logger } from '../common/logger';
 

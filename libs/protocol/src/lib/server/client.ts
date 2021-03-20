@@ -2,7 +2,7 @@ import { TLSSocket } from 'tls';
 import { TypedEmitter } from '../common/typed-emitter';
 import { CastMessage } from '../protocol/proto-buf';
 import { PacketStream } from '../common/packet-stream';
-import { CastMessageServer } from '../protocol/google-cast';
+import { CastMessageServer } from '@cast-web/types';
 import { logger } from '../common/logger';
 
 export interface ServerClientMessageEvents {

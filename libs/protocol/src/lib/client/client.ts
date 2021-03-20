@@ -9,7 +9,7 @@ import {
   CastMessageBaseClient,
   CastMessages,
   ConnectionChannel, HeartbeatChannel, MediaChannel, ReceiverChannel,
-} from '../protocol/google-cast';
+} from '@cast-web/types';
 import { TypedEmitter } from '../common/typed-emitter';
 import { logger } from '../common/logger';
 

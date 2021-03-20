@@ -1,4 +1,5 @@
-import { Client, ConnectionChannel, Namespaces  } from '@cast-web/protocol';
+import { Client, } from '@cast-web/protocol';
+import { ConnectionChannel, Namespaces } from '@cast-web/types';
 import { BaseController, BaseControllerMessage } from './base';
 
 export interface ConnectionControllerEvents {
