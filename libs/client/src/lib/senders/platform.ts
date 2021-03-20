@@ -1,4 +1,4 @@
-import { Client } from '@cast-web/protocol';
+import { Client as ProtocolClient } from '@cast-web/protocol';
 import { ReceiverChannel, ReceiverStatusApplication } from '@cast-web/types'
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
@@ -19,7 +19,7 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
   private receiver: ReceiverController | undefined;
 
   constructor() {
-    super(new Client(), 'sender-0', 'receiver-0');
+    super(new ProtocolClient(), 'sender-0', 'receiver-0');
   }
   private onClientError(err: Error) {
     this.emit('error', err);
@@ -132,3 +132,5 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     this?.receiver?.getVolume(callback);
   }
 }
+
+export const Client = PlatformSender;
