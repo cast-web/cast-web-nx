@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@cast-web/protocol": ["libs/protocol/src/index.ts"],
-      "@cast-web/client": ["libs/client/src/index.ts"]
+      "@cast-web/client": ["libs/client/src/index.ts"],
+      "@cast-web/types": ["libs/types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

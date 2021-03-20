@@ -36,11 +36,11 @@
             "main": "libs/protocol/src/index.ts",
             "assets": [
               "libs/protocol/*.md",
-	      {
-		"input": "./libs/protocol/src/lib/protocol",
-		"glob": "cast_channel.proto",
-		"output": "./src/lib/protocol"
-	      }
+              {
+                "input": "./libs/protocol/src/lib/protocol",
+                "glob": "cast_channel.proto",
+                "output": "./src/lib/protocol"
+              }
             ]
           }
         }
@@ -81,6 +81,46 @@
             "main": "libs/client/src/index.ts",
             "assets": [
               "libs/client/*.md"
+            ]
+          }
+        }
+      }
+    },
+    "types": {
+      "root": "libs/types",
+      "sourceRoot": "libs/types/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/types/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/types"
+          ],
+          "options": {
+            "jestConfig": "libs/types/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/types",
+            "tsConfig": "libs/types/tsconfig.lib.json",
+            "packageJson": "libs/types/package.json",
+            "main": "libs/types/src/index.ts",
+            "assets": [
+              "libs/types/*.md"
             ]
           }
         }
