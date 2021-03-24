@@ -5,7 +5,8 @@ import { ConnectionController } from '../controllers/connection';
 import { HeartbeatController } from '../controllers/heartbeat';
 import { ReceiverController } from '../controllers/receiver';
 import { Application } from './application';
-import { ErrorCallback, ErrorStatusCallback } from '../controllers/base';
+import { ErrorCallback } from '../controllers/base';
+import { logger } from '../common/logger';
 
 export interface PlatformSenderEvents {
   error: ErrorCallback;
@@ -68,68 +69,61 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     this?.client?.close();
   }
 
-  private getStatus(callback: any) {
-    this?.receiver?.getStatus(callback);
+  private async getStatus() {
+    this?.receiver?.getStatus();
   }
 
-  private getSessions(callback: any) {
-    this?.receiver?.getSessions(callback);
+  // TODO: async
+  private async getSessions() {
+    this?.receiver?.getSessions();
   }
 
-  private getAppAvailability(appId: string, callback: any) {
-    // eslint-disable-next-line consistent-return
-    this?.receiver?.getAppAvailability(appId, (err?: Error, availability?: any) => {
-      if (err) return callback(err);
-      // TODO: oh boi...
-      // eslint-disable-next-line guard-for-in,no-restricted-syntax,no-undef
-      for (const key in availability) {
-        // eslint-disable-next-line no-param-reassign
-        availability[key] = (availability[key] === 'APP_AVAILABLE');
-      }
-      callback(err, availability);
-    });
+  private async getAppAvailability(appId: string) {
+    const availability = await this?.receiver?.getAppAvailability(appId);
+    // TODO: oh boi... redo this mutation situation here...
+    // eslint-disable-next-line guard-for-in,no-restricted-syntax,no-undef
+    for (const key in availability) {
+      availability[key] = (availability[key] === 'APP_AVAILABLE');
+    }
+    return availability;
   }
 
-  public join<ApplicationType extends Application>(
+  public async join<ApplicationType extends Application>(
     session: ReceiverStatusApplication,
     // TODO: typing
     application: { new (...args: any): ApplicationType },
-    callback: ErrorStatusCallback<ApplicationType>,
   ) {
-    if (this.client) {
-      // eslint-disable-next-line new-cap
-      callback(undefined, new application(this.client, session));
-    }
+    if (!this.client) { throw new Error('Cannot join, no client'); }
+    return new application(this.client, session);
   }
 
-  public launch(application: typeof Application, callback: any) {
+  public async launch(application: typeof Application) {
     // TODO: this is defined somewhere...
     // @ts-ignore
     // eslint-disable-next-line consistent-return
     this?.receiver?.launch(application.APP_ID, (err: Error, sessions: any[]) => {
-      if (err) return callback(err);
-
       // TODO: this is defined somewhere...
       // @ts-ignore
       const filtered = sessions.filter(session => session.appId === application.APP_ID);
       const session = filtered.shift();
 
-      // this.join(session, application, callback);
+      return this.join(session, application);
     });
   }
 
-  private stop(application: Application, callback: any) {
+  public async stop(application: Application) {
+    logger.warn('stop:')
     const { session } = application;
-    application.applicationClose();
-    this?.receiver?.stop(session?.sessionId || '', callback);
+    // application.applicationClose();
+    return this.receiver?.stop(session?.sessionId || '');
   }
 
-  private setVolume(volume: number, callback: any) {
-    this?.receiver?.setVolume(volume, callback);
+  public async setVolume(volume: number) {
+    return this.receiver?.setVolume(volume);
   }
 
-  private getVolume(callback: ErrorStatusCallback<number>) {
-    this?.receiver?.getVolume(callback);
+  public async getVolume() {
+    return this.receiver?.getVolume();
   }
 }
 

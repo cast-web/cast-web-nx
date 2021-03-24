@@ -13,35 +13,34 @@ export class DefaultMediaReceiver extends Application {
     this.media = new MediaController(client, this?.senderId, this?.receiverId);
 
     this.media.on('status', this.onDefaultMediaReceiverStatus);
-
   }
 
   private onDefaultMediaReceiverStatus(status: any) {
     this.emit('status', status);
   }
 
-  private getStatus(callback: any) {
-    this.media.getStatus(callback);
+  public async getStatus() {
+    return this.media.getStatus();
   }
 
   // private load(media: any, options: any, callback: any) {
   //   this.media.load(media, options, callback);
   // }
 
-  private play(callback: any) {
-    this.media.play(callback);
+  public async play() {
+    return this.media.play();
   }
 
-  private pause(callback: any) {
-    this.media.pause(callback);
+  public async pause() {
+    return this.media.pause();
   }
 
-  private stop(callback: any) {
-    this.media.stop(callback);
+  public async stop() {
+    return this.media.stop();
   }
 
-  private seek(currentTime: any, callback: any) {
-    this.media.seek(currentTime, callback);
+  public async seek(currentTime: any) {
+    return this.media.seek(currentTime);
   }
 
   // queue

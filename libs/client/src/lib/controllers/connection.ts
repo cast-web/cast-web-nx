@@ -1,6 +1,7 @@
 import { Client, } from '@cast-web/protocol';
 import { ConnectionChannel, Namespaces } from '@cast-web/types';
 import { BaseController, BaseControllerMessage } from './base';
+import { logger } from '../common/logger';
 
 export interface ConnectionControllerEvents {
   disconnect: () => void;
@@ -18,6 +19,7 @@ export class ConnectionController extends BaseController<
   }
 
   private onConnectionControllerMessage(message: BaseControllerMessage<any>): void {
+    logger.debug('onConnectionControllerMessage', message);
     if (message.data.type === 'CLOSE') {
       this.emit('disconnect');
     }

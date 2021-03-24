@@ -1,10 +1,10 @@
 import { Client } from '@cast-web/protocol';
 import { MediaChannel, Namespaces } from '@cast-web/types';
 import { RequestResponseController } from './request-response';
-import { BaseControllerMessage, StatusCallback } from './base';
+import { BaseControllerEvents, BaseControllerMessage, StatusCallback } from './base';
 import { logger } from '../common/logger';
 
-export interface MediaControllerEvents {
+export interface MediaControllerEvents extends BaseControllerEvents<MediaChannel['message']> {
   status: StatusCallback<MediaChannel['message']>;
 }
 
@@ -12,7 +12,7 @@ export class MediaController extends RequestResponseController<
   MediaChannel, MediaControllerEvents
 > {
 
-  private currentSession: any | undefined;
+  private currentSession: MediaChannel['message'];
 
   constructor(
     client?: Client,
@@ -23,18 +23,24 @@ export class MediaController extends RequestResponseController<
 
     this.currentSession = undefined;
 
-    // eslint-disable-next-line prefer-rest-params
     logger.debug('MediaController():', { client, sourceId, destinationId });
     this.on('message', message => this.onMediaMessage(message));
     this.once('close', this.onMediaClose);
+    // This is not part of the protocol I guess. However other re-implementations also do this
+    // Some CastReceivers don't send a MEDIA_STATUS on connect.
+    // THis fixes that.
+    this.getStatus();
   }
 
   // events
 
   private onMediaMessage(message: BaseControllerMessage<MediaChannel['message']>): void {
-    logger.debug('onMediaMessage:', message);
-    if (message.data.type === 'MEDIA_STATUS' && message.broadcast) {
+    logger.warn('onMediaMessage:', message.broadcast);
+    // there used to be a message.broadcast condition
+    // i guess this was here to prevent reqResp message to be parsed (i.e. parsed twice)
+    if (message.data.type === 'MEDIA_STATUS') {
       // TODO: check typing, why is this an array?
+      // well it is an array
       // @ts-ignore
       const status = message.data.status[0] as MediaChannel['message'];
       // Sometimes an empty status array can come through; if so don't emit it
@@ -52,47 +58,43 @@ export class MediaController extends RequestResponseController<
     this.stop();
   }
 
-  private sessionRequest(data: any, callback: any) {
-    const messageData = { ...data, mediaSessionId: this.currentSession.mediaSessionId };
+  private async sessionRequest(data: Omit<MediaChannel['data'], 'requestId' | 'sessionId'>) {
+    if (!this.currentSession?.mediaSessionId) {
+      logger.warn('currentSession: ', this.currentSession);
+      return;
+    }
+    // TODO: currentSession (and mediaSessionId) can be undefined
+    const messageData = { ...data, mediaSessionId: this.currentSession?.mediaSessionId };
 
-    this.request(messageData, (err, response) => {
-      if (err) return callback(err);
-      const status = response.status[0];
-      callback(null, status);
-    });
+    // TODO: this was the old data structure: const status = response.status[0];
+    // TODO: sessionId is missing? idk why... afaik we need mediaSessionId and sessionId for a media request
+    // @ts-ignore
+    return (await this.request(messageData, this.currentSession));
   }
 
   // TODO: promise
-  public getStatus(callback?: any) {
-    this.request({ type: 'GET_STATUS' }, (err, response) => {
-      if (err) return callback(err);
-      const status = response.status[0];
-      this.currentSession = status;
-      callback(null, status);
-    });
+  public async getStatus() {
+    // TODO: this was the old data structure: const status = response.status[0];
+    // @ts-ignore
+    return (await this.request({ type: 'GET_STATUS' }));
   }
 
   // controls
 
-  public stop(callback?: any) {
-    this.sessionRequest({ type: 'STOP' }, callback);
+  public async stop() {
+    return (await this.sessionRequest({ type: 'STOP' }));
   }
 
-  public play(callback?: any) {
-    this.sessionRequest({ type: 'PLAY' }, callback);
+  public async play() {
+    return (await this.sessionRequest({ type: 'PLAY' }));
   }
 
-  public pause(callback?: any) {
-    this.sessionRequest({ type: 'PAUSE' }, callback);
+  public async pause() {
+    return (await this.sessionRequest({ type: 'PAUSE' }));
   }
 
-  public seek(currentTime: any, callback: any) {
-    const data = {
-      type: 'SEEK',
-      currentTime,
-    };
-
-    this.sessionRequest(data, callback);
+  public async seek(currentTime: number) {
+    return (await this.sessionRequest( { type: 'SEEK', currentTime }));
   }
 
   // load

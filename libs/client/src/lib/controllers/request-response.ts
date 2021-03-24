@@ -1,57 +1,78 @@
-import { BaseChannel } from '@cast-web/types';
-import { BaseController, BaseControllerMessage, ErrorStatusCallback } from './base';
+import { RequestChannel } from '@cast-web/types';
+import { BaseController, BaseControllerEvents, BaseControllerMessage, ErrorStatusCallback } from './base';
 import { logger } from '../common/logger';
 
+ /**
+  * Matches a message request to an incoming response.
+  *
+  * @example
+  * TODO:
+  */
 export class RequestResponseController<
-  ChannelType extends BaseChannel,
-  CustomMessages,
+  ChannelType extends RequestChannel,
+  CustomMessages extends Partial<BaseControllerEvents<ChannelType['message']>>,
 > extends BaseController<ChannelType, CustomMessages> {
 
   private lastRequestId = 0;
 
-  // TODO: type the callback and the data (!) this is really important
-  // TODO: get rid of callback
-  protected request<T>(data: any, callback: ErrorStatusCallback<T | any>): void {
+   /**
+    * Sends a request and returns a response.
+    *
+    * @example
+    * TODO:
+    *
+    * @param data
+    * @protected
+    * @returns Message Data | Rejects on Error
+    */
+  protected request<T>(data: Omit<ChannelType['data'], 'requestId'>): Promise<ChannelType['message']> {
     const requestId = this.lastRequestId++;
-    const payloadData = { ...data, requestId };
+    const payloadData = { ...data, requestId } as ChannelType['data'];
 
-    // TODO: fix this message typing
-    // @ts-ignore
-    this.on('message', message => this.onRequestResponseMessage({
-      ...message,
-      requestId,
-      callback,
-    }));
+    const promise = new Promise<ChannelType['message']>((resolve, reject) => {
+      this.on('message', message => {
+       const res = this.onRequestResponseMessage({ ...message, requestId });
+       if (res) { res instanceof Error ? reject(res) : resolve(res) }
+      });
+    });
 
     this.send(payloadData);
+    return promise;
   }
 
-  // TODO: This needs mayor rework
+   /**
+    * Parses incoming messages and check's for requestId match.
+    *
+    * @remarks
+    * This is checking if the incoming message.requestId matches
+    * the outgoing one. Is this the answer to the message we've sent.
+    *
+    * @example
+    * TODO:
+    *
+    * @param message
+    * @private
+    * @returns Message Data | Error | (undefined requestId mismatch).
+    */
   private onRequestResponseMessage(
-    message: BaseControllerMessage<ChannelType['data']>,
-  ): void {
+    message: BaseControllerMessage<ChannelType['message']>,
+  ): ChannelType['message'] | Error | undefined {
     logger.debug('onRequestResponseMessage:', message);
-    // This is checking if the incoming message.requestId matches the outgoing on
-    // i.e. if this is the answer to the message we've been waiting for
-    // TODO: add requestId to message.data, since this should be present on every message
-    // @ts-ignore
-    if (message.data.requestId === message.requestId) {
-      // @ts-ignore
+    if (message?.data?.requestId === message?.requestId) {
       this.removeListener('message', this.onRequestResponseMessage);
-      // TODO: this typing is broken as well. rn `data` doesn't contain a response field
+      // TODO: typing broken. rn `data` doesn't contain a response field
       // @ts-ignore
       if (message.data?.response?.type === 'INVALID_REQUEST' && message.callback) {
+        // TODO: typing broken. rn `data` doesn't contain a reason field
         // @ts-ignore
-        return message.callback(new Error(`Invalid request: ${message.data.reason}`));
+        return new Error(`Invalid request: ${message.data?.reason}`);
       }
 
-      // @ts-ignore
-      // eslint-disable-next-line no-param-reassign
       delete message.data.requestId;
-      if (message.callback) { message.callback(undefined, message.data); }
+      return message?.data;
     } else {
-      // @ts-ignore
       logger.debug('onRequestResponseMessage, requestId mismatch', message.requestId, message.data.requestId);
+      return undefined;
     }
   }
 }

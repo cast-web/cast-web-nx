@@ -25,7 +25,7 @@ export interface BaseControllerEvents<MessageDataType> {
 
 export class BaseController<
   ChannelType extends BaseChannel,
-  CustomMessages extends any,
+  CustomMessages,
 > extends TypedEmitter<
   BaseControllerEvents<ChannelType['message']> & CustomMessages
 > {
@@ -55,14 +55,14 @@ export class BaseController<
       broadcast,
     };
     logger.debug('onControllerMessage:', base);
-    // TODO: fix this typing
+    // TODO: somehow it doesn't tsc without this
     // @ts-ignore
     this.emit('message', base);
   }
 
   private onControllerClose(): void {
     this.channel?.removeListener('message', this.onControllerMessage);
-    // TODO: fix this typing
+    // TODO: somehow it doesn't tsc without this
     // @ts-ignore
     this.emit('close');
   }

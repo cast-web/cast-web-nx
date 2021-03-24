@@ -26,7 +26,19 @@ export class GenericMediaApplication extends Application {
     this.emit('status', message);
   }
 
-  public getStatus(callback: any) {
-    this.media.getStatus(callback);
+  public async getStatus() {
+    return this.media.getStatus();
+  }
+
+  public async play() {
+    return this.media.play();
+  }
+
+  public async pause() {
+    return this.media.pause();
+  }
+
+  public async stop() {
+    return this.media.stop();
   }
 }

@@ -9,6 +9,7 @@ export enum Namespaces {
   Media = 'urn:x-cast:com.google.cast.media',
   Receiver = 'urn:x-cast:com.google.cast.receiver',
   DeviceAuth = 'urn:x-cast:com.google.cast.tp.deviceauth',
+  MultiZone = 'urn:x-cast:com.google.cast.multizone',
 }
 
 // MESSAGE-TYPES
@@ -25,7 +26,8 @@ export type MediaMessageTypes =
   'STOP' |
   'PLAY' |
   'PAUSE' |
-  'SEEK';
+  'SEEK' |
+  'GET_STATUS';
 
 export type ReceiverMessageTypes =
   'GET_APP_AVAILABILITY' |
@@ -150,8 +152,11 @@ export interface MediaChannel {
 
 export interface ReceiverChannel {
   namespace: Namespaces.Receiver,
+  // TODO: document this as outgoing
   data: ReceiverData,
+  // TODO: document this as incoming
   message: ReceiverMessage,
 }
 
 export type BaseChannel = ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel;
+export type RequestChannel = MediaChannel | ReceiverChannel;

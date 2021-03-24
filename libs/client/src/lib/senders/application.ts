@@ -3,15 +3,16 @@ import { ReceiverStatusApplication } from '@cast-web/types';
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
 import { ErrorCallback } from '../controllers/base';
+import { logger } from '../common/logger';
 
 export interface ApplicationSenderEvents {
   error: ErrorCallback;
   status: (data: any) => void;
-  applicationClose: any,
+  applicationClose: () => void,
 }
 export class Application extends Sender<ApplicationSenderEvents> {
 
-  private connection: any;
+  protected connection: ConnectionController;
   public session: ReceiverStatusApplication | undefined;
 
   constructor(
@@ -28,8 +29,8 @@ export class Application extends Sender<ApplicationSenderEvents> {
     this.connection = new ConnectionController(client, this.senderId, this.receiverId);
     this.connection.connect();
 
-    this.connection.on('disconnect', this.onApplicationDisconnect);
-    this.on('applicationClose', this.onApplicationClose);
+    this.connection.on('disconnect', () => this.onApplicationDisconnect());
+    this.on('applicationClose', () => this.onApplicationClose());
   }
 
   private onApplicationDisconnect() {
@@ -42,10 +43,10 @@ export class Application extends Sender<ApplicationSenderEvents> {
     this.connection.close();
     this.connection = undefined;
     this.session = undefined;
-    this.applicationClose();
   }
 
-  public applicationClose(): void {
+  // TODO: this cannot actually be done here? The receiver needs to stop the application
+  private applicationClose(): void {
     this.connection.disconnect();
     this.emit('applicationClose');
   }
