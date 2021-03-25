@@ -2,6 +2,9 @@ import { Client } from '@cast-web/protocol';
 import { MediaController } from '../controllers/media';
 import { Application } from './application';
 
+/**
+ * @category Senders
+ */
 export class DefaultMediaReceiver extends Application {
 
   private readonly APP_ID = 'CC1AD845';

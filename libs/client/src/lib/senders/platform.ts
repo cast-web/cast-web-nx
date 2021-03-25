@@ -1,5 +1,5 @@
-import { Client as ProtocolClient } from '@cast-web/protocol';
-import { ReceiverChannel, ReceiverStatusApplication } from '@cast-web/types'
+import { Client as ProtocolClient, ClientConnectOptions } from '@cast-web/protocol';
+import { ReceiverChannel, ReceiverStatus, ReceiverStatusApplication } from '@cast-web/types'
 import { Sender } from './sender';
 import { ConnectionController } from '../controllers/connection';
 import { HeartbeatController } from '../controllers/heartbeat';
@@ -13,6 +13,19 @@ export interface PlatformSenderEvents {
   status: (data: ReceiverChannel['message']['status']) => void;
 }
 
+/**
+ * This represents a Google Cast Client (a Chromecast).
+ *
+ * @category Senders
+ * @example
+ * ```ts
+ * const myDevice = new Client();
+ * await myDevice.connect({ host: '192.168.1.101', port: 8009 });
+ *
+ * myDevice.on('status', status => console.log('myDevice status:', status));
+ * myDevice.on('error', error => console.log('myDevice error:', error));
+ * ```
+ */
 export class PlatformSender extends Sender<PlatformSenderEvents> {
 
   private connection: ConnectionController | undefined;
@@ -46,7 +59,12 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     this.emit('status', status);
   }
 
-  public async connect(options: any): Promise<void> {
+  /**
+   * Connects to the client.
+   * @param options - ClientConnectOptions
+   * @returns Promise<void> - indicating connection established.
+   */
+  public async connect(options: ClientConnectOptions): Promise<void> {
     this?.client?.on('error', this.onClientError);
 
     await this?.client?.connect(options);
@@ -64,21 +82,45 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     this?.heartbeat?.start();
   }
 
-  // TODO: rename this?
+  /**
+   * Closes the client and removes all listeners.
+   * @remarks
+   * This is important to prevent memory leaks. The client will close automatically
+   * should one of the channels close.
+   */
   public clientClose() {
     this?.client?.close();
   }
 
-  private async getStatus() {
-    this?.receiver?.getStatus();
+  /**
+   * Queries for current ReceiverStatus.
+   * @remarks
+   * This does trigger the 'status' EventEmitter.
+   * @returns
+   * The current ReceiverStatus.
+   */
+  public async getStatus(): Promise<ReceiverStatus['status']> {
+    return this?.receiver?.getStatus();
   }
 
-  // TODO: async
-  private async getSessions() {
-    this?.receiver?.getSessions();
+  /**
+   * Queries for currently running applications.
+   * @remarks
+   * This does trigger the 'status' EventEmitter.
+   * @returns
+   * Array with the currently running application ids.
+   */
+  public async getSessions(): Promise<ReceiverStatus['status']['applications']> {
+    return this?.receiver?.getSessions();
   }
 
-  private async getAppAvailability(appId: string) {
+  /**
+   * Checks if appId is available on the receiver.
+   * @param appId
+   * @returns
+   * TODO:
+   */
+  public async getAppAvailability(appId: string) {
     const availability = await this?.receiver?.getAppAvailability(appId);
     // TODO: oh boi... redo this mutation situation here...
     // eslint-disable-next-line guard-for-in,no-restricted-syntax,no-undef
@@ -88,6 +130,28 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     return availability;
   }
 
+  /**
+   * Joins the currently running Application.
+   * @param session
+   * @param application
+   * @remarks
+   * Join as a generic Application to get basic controls. (TODO: reference)
+   * Use a matching Application for better control support.
+   * TODO: application list with reference
+   * @example
+   * ```ts
+   * myDevice.on('status', async status => {
+   *  const session = (data?.applications || [])[0];
+   *
+   *  if (session?.sessionId) {
+   *    console.log('joining session:', session);
+   *    const application = await tobiasHome.join<ApplicationClass>(session, ApplicationClass);
+   *    console.log('joined application:', application);
+   *    // TODO: reference Application doc
+   *  }
+   * });
+   * ```
+   */
   public async join<ApplicationType extends Application>(
     session: ReceiverStatusApplication,
     // TODO: typing
@@ -97,20 +161,30 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     return new application(this.client, session);
   }
 
-  public async launch(application: typeof Application) {
+  /**
+   * Launches specified application.
+   * @param application
+   * @returns application
+   * @example TODO:
+   */
+  public async launch(application: typeof Application): Promise<Application> {
     // TODO: this is defined somewhere...
     // @ts-ignore
-    // eslint-disable-next-line consistent-return
-    this?.receiver?.launch(application.APP_ID, (err: Error, sessions: any[]) => {
-      // TODO: this is defined somewhere...
-      // @ts-ignore
-      const filtered = sessions.filter(session => session.appId === application.APP_ID);
-      const session = filtered.shift();
+    const sessions = await this?.receiver?.launch(application.APP_ID);
+    // TODO: redo this
+    // TODO: this is defined somewhere...
+    // @ts-ignore
+    const filtered = sessions.filter(session => session.appId === application.APP_ID);
+    const session = filtered.shift();
 
-      return this.join(session, application);
-    });
+    return this.join(session, application);
   }
 
+  /**
+   * Stops the specified application.
+   * @param application
+   * @returns ReceiverStatusApplication[] - list of sessions
+   */
   public async stop(application: Application) {
     logger.warn('stop:')
     const { session } = application;
@@ -118,10 +192,19 @@ export class PlatformSender extends Sender<PlatformSenderEvents> {
     return this.receiver?.stop(session?.sessionId || '');
   }
 
+  /**
+   * Sets the device volume.
+   * @param volume
+   * @returns volume - the new volume
+   */
   public async setVolume(volume: number) {
     return this.receiver?.setVolume(volume);
   }
 
+  /**
+   * Gets the device volume.
+   * @returns volume - the current volume
+   */
   public async getVolume() {
     return this.receiver?.getVolume();
   }

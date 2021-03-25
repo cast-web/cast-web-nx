@@ -83,6 +83,16 @@
               "libs/client/*.md"
             ]
           }
+        },
+	"docs": {
+            "executor": "@nrwl/workspace:run-commands",
+                "options": {
+                "commands": [
+                    {
+                        "command": "yarn typedoc --tsconfig libs/client/tsconfig.lib.json --excludeExternals --excludePrivate --out docs/client libs/client/src/index.ts"
+                    }
+                ]
+            }
         }
       }
     },

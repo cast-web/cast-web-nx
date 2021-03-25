@@ -7,6 +7,9 @@ export interface ConnectionControllerEvents {
   disconnect: () => void;
 }
 
+/**
+ * @category Controllers
+ */
 export class ConnectionController extends BaseController<
   ConnectionChannel, ConnectionControllerEvents
 > {

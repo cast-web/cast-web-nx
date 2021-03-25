@@ -1,6 +1,9 @@
 import { Client } from '@cast-web/protocol';
 import { TypedEmitter } from '../common/typed-emitter';
 
+/**
+ * @category Base
+ */
 export class Sender<CustomMessages> extends TypedEmitter<CustomMessages> {
 
   constructor(

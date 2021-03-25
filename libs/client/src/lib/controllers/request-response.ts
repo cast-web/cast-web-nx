@@ -5,6 +5,7 @@ import { logger } from '../common/logger';
  /**
   * Matches a message request to an incoming response.
   *
+  * @category Controllers
   * @example
   * TODO:
   */

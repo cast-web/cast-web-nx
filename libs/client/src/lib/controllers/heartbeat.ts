@@ -10,6 +10,9 @@ export interface HeartbeatControllerEvents {
   timeout: () => void;
 }
 
+/**
+ * @category Controllers
+ */
 export class HeartbeatController extends BaseController<
   HeartbeatChannel, HeartbeatControllerEvents
 > {

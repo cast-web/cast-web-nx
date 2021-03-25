@@ -10,6 +10,10 @@ export interface ApplicationSenderEvents {
   status: (data: any) => void;
   applicationClose: () => void,
 }
+
+/**
+ * @category Senders
+ */
 export class Application extends Sender<ApplicationSenderEvents> {
 
   protected connection: ConnectionController;

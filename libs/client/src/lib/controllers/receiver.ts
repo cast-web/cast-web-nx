@@ -7,6 +7,10 @@ export interface ReceiverControllerEvents extends BaseControllerEvents<ReceiverC
   status: StatusCallback<ReceiverChannel['message']['status']>;
 }
 
+
+/**
+ * @category Controllers
+ */
 export class ReceiverController extends RequestResponseController<
   ReceiverChannel, ReceiverControllerEvents
 > {

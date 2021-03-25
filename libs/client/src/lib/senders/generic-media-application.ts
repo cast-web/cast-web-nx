@@ -4,6 +4,9 @@ import { Application } from './application';
 import { MediaController } from '../controllers/media';
 import { logger } from '../common/logger';
 
+/**
+ * @category Senders
+ */
 export class GenericMediaApplication extends Application {
 
   private media: MediaController;

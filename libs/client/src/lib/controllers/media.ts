@@ -8,6 +8,9 @@ export interface MediaControllerEvents extends BaseControllerEvents<MediaChannel
   status: StatusCallback<MediaChannel['message']>;
 }
 
+/**
+ * @category Controllers
+ */
 export class MediaController extends RequestResponseController<
   MediaChannel, MediaControllerEvents
 > {

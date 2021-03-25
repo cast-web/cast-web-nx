@@ -6,6 +6,9 @@ import { logger } from '../common/logger';
 export type ErrorCallback = (error: Error) => void;
 export type StatusCallback<T> = (status: T) => void;
 export type MessageCallback<T> = (message: T) => void;
+/**
+ * @deprecated
+ */
 export type ErrorStatusCallback<T> = (error: Error | undefined, status?: T) => void;
 
 export interface BaseControllerMessage<MessageDataType> {
@@ -23,6 +26,9 @@ export interface BaseControllerEvents<MessageDataType> {
   close: () => void;
 }
 
+/**
+ * @category Base
+ */
 export class BaseController<
   ChannelType extends BaseChannel,
   CustomMessages,
