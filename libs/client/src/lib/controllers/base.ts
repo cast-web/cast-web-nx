@@ -6,17 +6,12 @@ import { logger } from '../common/logger';
 export type ErrorCallback = (error: Error) => void;
 export type StatusCallback<T> = (status: T) => void;
 export type MessageCallback<T> = (message: T) => void;
-/**
- * @deprecated
- */
-export type ErrorStatusCallback<T> = (error: Error | undefined, status?: T) => void;
 
 export interface BaseControllerMessage<MessageDataType> {
   data: MessageDataType;
   broadcast: boolean;
   // TODO: this is really broken; requestId/callback only required in ./request-response
   requestId?: number;
-  callback?: ErrorStatusCallback<MessageDataType>;
 }
 
 export interface BaseControllerEvents<MessageDataType> {

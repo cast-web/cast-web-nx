@@ -1,7 +1,7 @@
 import { Client } from '@cast-web/protocol';
 import { Namespaces, ReceiverChannel } from '@cast-web/types'
 import { RequestResponseController } from './request-response';
-import { BaseControllerEvents, BaseControllerMessage, ErrorStatusCallback, StatusCallback } from './base';
+import { BaseControllerEvents, BaseControllerMessage, StatusCallback } from './base';
 
 export interface ReceiverControllerEvents extends BaseControllerEvents<ReceiverChannel['message']> {
   status: StatusCallback<ReceiverChannel['message']['status']>;

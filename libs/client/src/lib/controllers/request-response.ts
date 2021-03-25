@@ -1,5 +1,5 @@
 import { RequestChannel } from '@cast-web/types';
-import { BaseController, BaseControllerEvents, BaseControllerMessage, ErrorStatusCallback } from './base';
+import { BaseController, BaseControllerEvents, BaseControllerMessage } from './base';
 import { logger } from '../common/logger';
 
  /**
@@ -63,7 +63,7 @@ export class RequestResponseController<
       this.removeListener('message', this.onRequestResponseMessage);
       // TODO: typing broken. rn `data` doesn't contain a response field
       // @ts-ignore
-      if (message.data?.response?.type === 'INVALID_REQUEST' && message.callback) {
+      if (message.data?.response?.type === 'INVALID_REQUEST') {
         // TODO: typing broken. rn `data` doesn't contain a reason field
         // @ts-ignore
         return new Error(`Invalid request: ${message.data?.reason}`);
