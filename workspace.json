@@ -43,6 +43,16 @@
               }
             ]
           }
+        },
+	"docs": {
+            "executor": "@nrwl/workspace:run-commands",
+                "options": {
+                "commands": [
+                    {
+                        "command": "yarn typedoc --tsconfig libs/protocol/tsconfig.lib.json --excludeExternals --excludePrivate --out docs/protocol libs/protocol/src/index.ts"
+                    }
+                ]
+            }
         }
       }
     },

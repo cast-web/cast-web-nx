@@ -26,10 +26,33 @@ export interface ClientConnectOptions {
   rejectUnauthorized?: boolean;
 }
 
+/**
+ * Manages socket connections and messages
+ * @example
+ * ``` ts
+ * import { Client } from '@cast-web/protocol';
+ *
+ * const client = new Client();
+ * // wait for the client to connect
+ * await client.connect({ host: '192.168.1.101' });
+ *
+ * client.on('connect', () => console.log('client connect'));
+ * client.on('close', () => console.log('client close'));
+ * client.on('error', error => console.log('client error:', error));
+ * client.on('message', message => console.log('client message:', message));
+ *
+ * // create channels here
+ * ```
+ */
 export class Client extends TypedEmitter<ClientEvents> {
   private socket: TLSSocket | undefined;
   private packetStream: PacketStream | undefined;
 
+  /**
+   * Connects to the client.
+   * @param options
+   * @returns Promise<void> - indicating connection established
+   */
   public async connect(options: ClientConnectOptions): Promise<void> {
     const clientConnectOptions: ClientConnectOptions = {
       ...options,
@@ -81,14 +104,29 @@ export class Client extends TypedEmitter<ClientEvents> {
     this.emit('close');
   }
 
-  public close() {
+  /**
+   * Closes the client connection
+   * @remarks Important to prevent EventEmitter leaks.
+   */
+  public close(): void {
     logger.info('close');
     // using socket.destroy here because socket.end caused stalled connection
     // in case of dongles going brutally down without a chance to FIN/ACK
     this?.socket?.destroy();
   }
 
-  public send(baseCastMessage: CastMessageBaseClient, data: CastMessages) {
+  /**
+   * Sends a message on the client connection.
+   * @param baseCastMessage
+   * @param data
+   * @example
+   * ```ts
+   * import { Namespaces } from '@cast-web/types';
+   * ...
+   * this.bus.send({ 'sender-0', 'receiver-0', Namespaces.Connection }, JSON.stringify({ foo: 'bar' }));
+   * ```
+   */
+  public send(baseCastMessage: CastMessageBaseClient, data: CastMessages): void {
     const isBuffer = Buffer.isBuffer(data);
     const message: CastMessageClient = {
       ...baseCastMessage,
@@ -104,6 +142,21 @@ export class Client extends TypedEmitter<ClientEvents> {
     this?.packetStream?.send(buffer);
   }
 
+  /**
+   * Creates a channel on the client.
+   * // TODO: reference Channel
+   * @param sourceId
+   * @param destinationId
+   * @param namespace
+   * @param encoding
+   * @returns Channel
+   * @example
+   * ```ts
+   * import { ConnectionChannel, Namespaces } from '@cast-web/types';
+   * ...
+   * const connection = client.createChannel<ConnectionChannel>('sender-0', 'receiver-0', Namespaces.Connection, 'JSON');
+   * ```
+   */
   public createChannel<
     ChannelType extends ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel
   >(

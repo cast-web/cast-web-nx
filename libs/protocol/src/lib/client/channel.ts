@@ -21,6 +21,40 @@ export interface ChannelEvents<
   connect: () => void;
 }
 
+/**
+ * Wraps a channel on a client bus.
+ * @example
+ * ```ts
+ * import { Client } from '@cast-web/protocol';
+ * import {
+ *   ConnectionChannel,
+ *   HeartbeatChannel,
+ *   ReceiverChannel,
+ *   Namespaces,
+ * } from '@cast-web/types';
+ *
+ * const client = new Client();
+ * // wait for the client to connect
+ * await client.connect({ host: '192.168.1.101' });
+ *
+ * // create channels
+ * const connection = client.createChannel<ConnectionChannel>('sender-0', 'receiver-0', Namespaces.Connection, 'JSON');
+ * const heartbeat = client.createChannel<HeartbeatChannel>('sender-0', 'receiver-0', Namespaces.Heartbeat, 'JSON');
+ * const receiver = client.createChannel<ReceiverChannel>('sender-0', 'receiver-0', Namespaces.Receiver, 'JSON');
+ *
+ * // listen to channel events (receiver as an example)
+ * receiver.on('connect', () => console.log('receiver connect'));
+ * receiver.on('close', () => console.log('receiver close'));
+ * receiver.on('error', error => console.log('receiver error:', error));
+ * receiver.on('message', message => console.log('receiver message:', message));
+ *
+ * // connect to the receiver
+ * connection.send({ type: 'CONNECT' });
+ *
+ * // start the heartbeat
+ * setInterval(() => heartbeat.send({ type: 'PING' }), 5000);
+ * ```
+ */
 export class Channel<
   ChannelType extends ConnectionChannel | HeartbeatChannel | MediaChannel | ReceiverChannel
 > extends TypedEmitter<ChannelEvents<ChannelType>> {
@@ -55,6 +89,16 @@ export class Channel<
     this.bus.removeListener('message', this.onBusMessage);
   }
 
+  /**
+   * Sends data on the channel.
+   * @param data - depend on channel type
+   * @returns void
+   * @example
+   * ```ts
+   * // ConnectionChannel
+   * connection.send({ type: 'CONNECT' });
+   * ```
+   */
   public send(data: ChannelType['data']): void {
     logger.debug('send:', data);
     const { sourceId, destinationId, namespace } = this;
@@ -64,11 +108,21 @@ export class Channel<
     );
   }
 
+  /**
+   * Closes the channel
+   * @remarks This is important to prevent EventEmitter leaks.
+   */
   public close(): void {
     this.emit('close');
   }
 
-  public static encode(data: any, encoding: ChannelEncoding) {
+  /**
+   * Encodes data to be sent on a channel.
+   * @param data
+   * @param encoding
+   * @returns Encoded data.
+   */
+  public static encode(data: any, encoding: ChannelEncoding): any {
     if (!encoding) return data;
     switch (encoding) {
       case 'JSON': return JSON.stringify(data);
@@ -76,7 +130,13 @@ export class Channel<
     }
   }
 
-  public static decode(data: any, encoding: ChannelEncoding) {
+  /**
+   * Decodes data received on a channel
+   * @param data
+   * @param encoding
+   * @returns JS expresion of the data.
+   */
+  public static decode(data: any, encoding: ChannelEncoding): any {
     if (!encoding) return data;
     switch (encoding) {
       case 'JSON': return JSON.parse(data);

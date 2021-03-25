@@ -1,0 +1,427 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@cast-web/protocol</title>
+	<meta name="description" content="Documentation for @cast-web/protocol">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@cast-web/protocol</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>@cast-web/protocol</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#protocol" id="protocol" style="color: inherit; text-decoration: none;">
+					<h1>protocol</h1>
+				</a>
+				<p>This library was generated with <a href="https://nx.dev">Nx</a>.</p>
+				<a href="#running-unit-tests" id="running-unit-tests" style="color: inherit; text-decoration: none;">
+					<h2>Running unit tests</h2>
+				</a>
+				<p>Run <code>nx test protocol</code> to execute the unit tests via <a href="https://jestjs.io">Jest</a>.</p>
+				<a href="#an-implementation-of-the-google-cast-protocol-v2" id="an-implementation-of-the-google-cast-protocol-v2" style="color: inherit; text-decoration: none;">
+					<h3>An implementation of the Google Cast protocol v2</h3>
+				</a>
+				<p>This is a fork of <a href="https://github.com/thibauts/node-castv2" title="node-castv2">node-castv2</a> that aims to improve on the following:</p>
+				<ul>
+					<li>✅ TS typing</li>
+					<li>✅ promised based API (where it makes sense)</li>
+					<li>✅ unified code styling</li>
+					<li>✅ full ES6 syntax</li>
+					<li>⏳ unit testing</li>
+					<li>⏳ tsdoc</li>
+					<li>✨ and more to come!</li>
+				</ul>
+				<p>The module provides both a <code>Client</code> and a <code>Server</code> implementation of the low-level protocol. The server is (sadly) pretty useless because device authentication gets in the way for now (and maybe for good). The client still allows you to connect and exchange messages with a Chromecast dongle without any restriction.
+				The <code>Client</code> is untested and probably doesn&#39;t work. I don&#39;t see the point in refactoring it.</p>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<p>TODO:</p>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Client</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cast-protocol&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">ConnectionChannel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">HeartbeatChannel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">ReceiverChannel</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">Namespaces</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@cast-web/types&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">client</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Client</span><span style="color: #000000">();</span>
+<span style="color: #008000">// wait for the client to connect</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">connect</span><span style="color: #000000">({ </span><span style="color: #001080">host:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;192.168.1.101&#039;</span><span style="color: #000000"> });</span>
+
+<span style="color: #008000">// create various namespace handlers</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">connection</span><span style="color: #000000"> = </span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">createChannel</span><span style="color: #000000">&lt;</span><span style="color: #267F99">ConnectionChannel</span><span style="color: #000000">&gt;(</span><span style="color: #A31515">&#039;sender-0&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;receiver-0&#039;</span><span style="color: #000000">, </span><span style="color: #001080">Namespaces</span><span style="color: #000000">.</span><span style="color: #001080">Connection</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;JSON&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">heartbeat</span><span style="color: #000000"> = </span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">createChannel</span><span style="color: #000000">&lt;</span><span style="color: #267F99">HeartbeatChannel</span><span style="color: #000000">&gt;(</span><span style="color: #A31515">&#039;sender-0&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;receiver-0&#039;</span><span style="color: #000000">, </span><span style="color: #001080">Namespaces</span><span style="color: #000000">.</span><span style="color: #001080">Heartbeat</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;JSON&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">receiver</span><span style="color: #000000"> = </span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">createChannel</span><span style="color: #000000">&lt;</span><span style="color: #267F99">ReceiverChannel</span><span style="color: #000000">&gt;(</span><span style="color: #A31515">&#039;sender-0&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;receiver-0&#039;</span><span style="color: #000000">, </span><span style="color: #001080">Namespaces</span><span style="color: #000000">.</span><span style="color: #001080">Receiver</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;JSON&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// define event callbacks</span>
+<span style="color: #001080">receiver</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;message&#039;</span><span style="color: #000000">, </span><span style="color: #0000FF">function</span><span style="color: #000000">(</span><span style="color: #001080">data</span><span style="color: #000000">, </span><span style="color: #001080">broadcast</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000">(</span><span style="color: #001080">data</span><span style="color: #000000">.</span><span style="color: #001080">type</span><span style="color: #000000"> = </span><span style="color: #A31515">&#039;RECEIVER_STATUS&#039;</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">data</span><span style="color: #000000">.</span><span style="color: #001080">status</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// connect to the receiver</span>
+<span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">({ </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;CONNECT&#039;</span><span style="color: #000000"> });</span>
+
+<span style="color: #008000">// start heartbeating</span>
+<span style="color: #795E26">setInterval</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">heartbeat</span><span style="color: #000000">.</span><span style="color: #795E26">send</span><span style="color: #000000">({ </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;PING&#039;</span><span style="color: #000000"> }), </span><span style="color: #098658">5000</span><span style="color: #000000">);</span>
+
+</code></pre>
+				<a href="#debugging" id="debugging" style="color: inherit; text-decoration: none;">
+					<h2>Debugging</h2>
+				</a>
+				<a href="#protocol-description" id="protocol-description" style="color: inherit; text-decoration: none;">
+					<h2>Protocol description</h2>
+				</a>
+				<p>This is an attempt at documenting the low-level protocol. I hope it will give sender-app makers a clearer picture of what is happening behind the curtain, and give the others ideas about how this kind of protocol can be implemented. The information presented here has been collated from various internet sources (mainly example code and other attempts to implement the protocol) and my own trial and error. Correct me as needed as I may have gotten concepts or namings wrong.</p>
+				<a href="#the-tls--protocol-buffers-layer" id="the-tls--protocol-buffers-layer" style="color: inherit; text-decoration: none;">
+					<h3>The TLS / Protocol Buffers layer</h3>
+				</a>
+				<p>The client connects to the Chromecast through TLS on port 8009. Once the connection is established server and client exchange length-prefixed binary messages (that we&#39;ll call packets).</p>
+				<p>Packets have the following structure :</p>
+				<pre><code><span style="color: #000000">+----------------+------------------------------------------------+</span>
+<span style="color: #000000">| </span><span style="color: #001080">Packet</span><span style="color: #000000"> </span><span style="color: #001080">length</span><span style="color: #000000">  |               </span><span style="color: #795E26">Payload</span><span style="color: #000000"> (</span><span style="color: #001080">message</span><span style="color: #000000">)                |</span>
+<span style="color: #000000">+----------------+------------------------------------------------+</span>
+</code></pre>
+				<p>Packet length is a 32 bits Big Endian Unsigned Integer (UInt32BE in nodejs parlance) that determines the payload size.</p>
+				<p>Messages are serialized with Protocol Buffers and structured as follows (excerpt of <code>cast_channel.proto</code> with comments stripped) :</p>
+				<pre><code class="language-protobuf">message CastMessage {
+  enum ProtocolVersion {
+    CASTV2_1_0 = 0;
+  }
+  required ProtocolVersion protocol_version = 1;
+
+  required string source_id = 2;
+  required string destination_id = 3;
+
+  required string namespace = 4;
+
+  enum PayloadType {
+    STRING = 0;
+    BINARY = 1;
+  }
+  required PayloadType payload_type = 5;
+
+  optional string payload_utf8 = 6;
+  optional bytes payload_binary = 7;
+}
+</code></pre>
+				<p>The original .proto file can also be found in the Chromium source tree.</p>
+				<p>Using this structure the sender and receiver <em>platforms</em> (e.g. The Chrome browser and the Chromecast device) as well as sender and receiver <em>applications</em> (eg. a Chromecast receiver app and a Chrome browser sender app for YouTube) communicate on <em>channels</em>.</p>
+				<p>Senders and receivers identify themselves through IDs : <code>source_id</code> and <code>destination_id</code>. The sending platform (eg. the Chrome browser) usually uses <code>sender-0</code>. The receiving platform (the Chromecast dongle) uses <code>receiver-0</code>. Other senders and receivers use identifiers such as <code>sender-sdqo7ozi6s4a</code>, <code>client-4637</code> or <code>web-4</code>. We&#39;ll dig into that later.</p>
+				<a href="#namespaces" id="namespaces" style="color: inherit; text-decoration: none;">
+					<h3>Namespaces</h3>
+				</a>
+				<p>Senders and receivers communicate through <em>channels</em> defined by the <code>namespace</code> field. Each namespace corresponds to a protocol that can have its own semantics. Protocol-specific data is carried in the <code>payload_utf8</code> or <code>payload_binary</code> fields. Either one or the other is present in the message depending on the <code>payload_type</code> field value. Thanks to that, applications can define their own protocols and transparently exchange arbitrary data, including binary data, alleviating the need to establish additional connections (ie. websockets).</p>
+				<p>Though, many protocols use JSON encoded messages / commands, which makes them easy to understand and implement.</p>
+				<p>Each <em>sender</em> or <em>receiver</em> can implement one or multiple protocols. For instance the Chromecast <em>platform</em> (<code>receiver-0</code>) implements the protocols for the following namespaces : <code>urn:x-cast:com.google.cast.tp.connection</code>, <code>urn:x-cast:com.google.cast.tp.heartbeat</code>, <code>urn:x-cast:com.google.cast.receiver</code> and <code>urn:x-cast:com.google.cast.tp.deviceauth</code>.</p>
+				<a href="#communicating-with-receivers" id="communicating-with-receivers" style="color: inherit; text-decoration: none;">
+					<h3>Communicating with receivers</h3>
+				</a>
+				<p>Before being able to exchange messages with a receiver (be it an <em>application</em> or the <em>platform</em>), a sender must establish a <em>virtual connection</em> with it. This is accomplished through the <code>urn:x-cast:com.google.cast.tp.connection</code> namespace / protocol. This has the effect of both allowing the sender to send messages to the receiver, and of subscribing the sender to the receiver&#39;s broadcasts (eg. status updates).</p>
+				<p>The protocol is JSON encoded and the semantics are pretty simple :</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left"><strong>Message payload</strong></th>
+							<th align="left"><strong>Description</strong></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;CONNECT&quot; }</code></td>
+							<td align="left">establishes a virtual connection between the sender and the receiver</td>
+						</tr>
+						<tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;CLOSE&quot; }</code></td>
+							<td align="left">closes a virtual connection</td>
+						</tr>
+				</tbody></table>
+				<p>The sender may receive a <code>CLOSE</code> message from the receiver that terminates the virtual connection. This sometimes happens in error cases.</p>
+				<p>Once the virtual connection is established messages can be exchanged. Broadcasts from the receiver will have a <code>*</code> value for the <code>destination_id</code> field.</p>
+				<a href="#keeping-the-connection-alive" id="keeping-the-connection-alive" style="color: inherit; text-decoration: none;">
+					<h3>Keeping the connection alive</h3>
+				</a>
+				<p>Connections are kept alive through the <code>urn:x-cast:com.google.cast.tp.heartbeat</code> namespace / protocol. At regular intervals, the sender must send a <code>PING</code> message that will get answered by a <code>PONG</code>. The protocol is JSON encoded.</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left"><strong>Message payload</strong></th>
+							<th align="left"><strong>Description</strong></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;PING&quot; }</code></td>
+							<td align="left">notifies the other end that we are sill alive</td>
+						</tr>
+						<tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;PONG&quot; }</code></td>
+							<td align="left">the other end acknowledges that we are</td>
+						</tr>
+				</tbody></table>
+				<p>Failing to do so will lead to connection termination. The default interval seems to be 5 seconds. This protocol allows the Chromecast to detect unresponsive / offline senders much quicker than the TCP keepalive mechanism.</p>
+				<a href="#device-authentication" id="device-authentication" style="color: inherit; text-decoration: none;">
+					<h3>Device authentication</h3>
+				</a>
+				<p>Device authentication enables a sender to authenticate a Chromecast device. Authenticating the device is purely optional from a sender&#39;s perspective, though the official SDK libraries do it to prevent rogue Chromecast devices to communicate with the official sender platforms. Device authentication is taken care of by the <code>urn:x-cast:com.google.cast.tp.deviceauth</code> namespace / protocol.</p>
+				<p>First, the sender sends a <em>challenge</em> message to the platform receiver <code>receiver-0</code> which responds by either a <em>response</em> message containing a signature, certificate and a variable number of certificate authority certificates that the sent certificate is verified against or an <em>error</em> message. These 3 payloads are protocol buffers encoded and described in <code>cast_channel.proto</code> as follows :</p>
+				<pre><code class="language-protobuf">message AuthChallenge {
+}
+
+message AuthResponse {
+  required bytes signature = 1;
+  required bytes client_auth_certificate = 2;
+  repeated bytes client_ca = 3;
+}
+
+message AuthError {
+  enum ErrorType {
+    INTERNAL_ERROR = 0;
+    NO_TLS = 1;  // The underlying connection is not TLS
+  }
+  required ErrorType error_type = 1;
+}
+
+message DeviceAuthMessage {
+  optional AuthChallenge challenge = 1;
+  optional AuthResponse response = 2;
+  optional AuthError error = 3;
+}
+</code></pre>
+				<p>The challenge message is empty in the current version of the protocol (CAST v2.1.0), yet official sender platforms are checking the returned certificate and signature. Details of the verification process can be found in <a href="https://github.com/thibauts/node-castv2-messagebus/issues/2">this issue</a>.</p>
+				<a href="#controlling-applications" id="controlling-applications" style="color: inherit; text-decoration: none;">
+					<h3>Controlling applications</h3>
+				</a>
+				<p>The platform receiver <code>receiver-0</code> implements the <code>urn:x-cast:com.google.cast.receiver</code> namespace / protocol which provides an interface to <em>launch</em>, <em>stop</em>, and <em>query the status</em> of running applications. <code>receiver-0</code> also broadcast status messages on this namespace when other senders launch, stop, or affect the status of running apps. It also allows checking the app for availability.</p>
+				<p>The protocol is JSON encoded and is request / response based. Requests include a <code>type</code> field containing the type of the request, namely <code>LAUNCH</code>, <code>STOP</code>, <code>GET_STATUS</code> and <code>GET_APP_AVAILABILITY</code>, and a <code>requestId</code> field that will be reflected in the receiver&#39;s response and allows the sender to pair request and responses. <code>requestId</code> is not shown in the table below but must be present in every request. In the wild, it is an initially random integer that gets incremented for each subsequent request.</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left"><strong>Message payload</strong></th>
+							<th align="left"><strong>Description</strong></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;LAUNCH&quot;, appId: &lt;string&gt; }</code></td>
+							<td align="left">launches an application</td>
+						</tr>
+						<tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;STOP&quot;, sessionId: &lt;string&gt; }</code></td>
+							<td align="left">stops a running instance of an application</td>
+						</tr>
+						<tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;GET_STATUS&quot; }</code></td>
+							<td align="left">returns the status of the platform receiver, including details about running apps.</td>
+						</tr>
+						<tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;GET_APP_AVAILABILITY&quot;, appId: &lt;array&gt; }</code></td>
+							<td align="left">returns availability of requested apps. <code>appId</code> is an array of application IDs.</td>
+						</tr>
+				</tbody></table>
+				<p><code>appId</code> may be eg. <code>YouTube</code> or <code>CC1AD845</code> for the <em>Default Media Receiver</em> app. A <code>sessionId</code> identifies a running instance of an application and is provided in status messages.</p>
+				<p>As these requests affect the receiver&#39;s status they all return a <code>RECEIVER_STATUS</code> message of the following form :</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;requestId&quot;</span><span style="color: #000000">: </span><span style="color: #098658">8476438</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;status&quot;</span><span style="color: #000000">: { </span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;applications&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">      { </span><span style="color: #0451A5">&quot;appId&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;CC1AD845&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;displayName&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;Default Media Receiver&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;namespaces&quot;</span><span style="color: #000000">: [ </span>
+<span style="color: #000000">          </span><span style="color: #A31515">&quot;urn:x-cast:com.google.cast.player.message&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">          </span><span style="color: #A31515">&quot;urn:x-cast:com.google.cast.media&quot;</span>
+<span style="color: #000000">        ],</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;sessionId&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;7E2FF513-CDF6-9A91-2B28-3E3DE7BAC174&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;statusText&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;Ready To Cast&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;transportId&quot;</span><span style="color: #000000">:  </span><span style="color: #A31515">&quot;web-5&quot;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">    ],</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;isActiveInput&quot;</span><span style="color: #000000">: </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;volume&quot;</span><span style="color: #000000">: { </span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;level&quot;</span><span style="color: #000000">: </span><span style="color: #098658">1</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;muted&quot;</span><span style="color: #000000">: </span><span style="color: #0000FF">false</span><span style="color: #000000"> </span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;type&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;RECEIVER_STATUS&quot;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>This response indicates an instance of the <em>Default Media Receiver</em> is running with <code>sessionId 7E2FF513-CDF6-9A91-2B28-3E3DE7BAC174</code>. <code>namespaces</code> indicates which protocols are supported by the running app. This could allow any <em>sender application</em> implementing the <em>media protocol</em> to control playback on this session.</p>
+				<p>Another important field here is <code>transportId</code> as it is the destinationId to be used to communicate with the app. Note that the app being a receiver like any other you must issue it a <code>CONNECT</code> message through the <code>urn:x-cast:com.google.cast.tp.connection</code> protocol before being able to send messages. In this case, this will have the side effect of subscribing you to media updates (on the media channel) of this <em>Default Media Player</em> session.</p>
+				<p>You can join an existing session (launched by another sender) by issuing the same <code>CONNECT</code> message.</p>
+				<a href="#controlling-device-volume" id="controlling-device-volume" style="color: inherit; text-decoration: none;">
+					<h3>Controlling device volume</h3>
+				</a>
+				<p><code>receiver-0</code> allows setting volume and muting at the device-level through the <code>SET_VOLUME</code> request on <code>urn:x-cast:com.google.cast.receiver</code>.</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left"><strong>Message payload</strong></th>
+							<th align="left"><strong>Description</strong></th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;SET_VOLUME&quot;, &quot;volume&quot;: { level: &lt;float&gt; } }</code></td>
+							<td align="left">sets volume. <code>level</code> is a float between 0 and 1</td>
+						</tr>
+						<tr>
+							<td align="left"><code>{ &quot;type&quot;: &quot;SET_VOLUME&quot;, &quot;volume&quot;: { muted: &lt;boolean&gt; } }</code></td>
+							<td align="left">mutes / unmutes. <code>muted</code> is true or false</td>
+						</tr>
+				</tbody></table>
+				<a href="#contributors" id="contributors" style="color: inherit; text-decoration: none;">
+					<h2>Contributors</h2>
+				</a>
+				<ul>
+					<li><a href="https://github.com/jamiees2">jamiees2</a> (James Sigurðarson)<blockquote>
+							<blockquote>
+								<blockquote>
+									<blockquote>
+										<blockquote>
+											<blockquote>
+												<blockquote>
+													<p>cast-web/protocol/master</p>
+												</blockquote>
+											</blockquote>
+										</blockquote>
+									</blockquote>
+								</blockquote>
+							</blockquote>
+						</blockquote>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/channel.html" class="tsd-kind-icon">Channel</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/client.html" class="tsd-kind-icon">Client</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/server.html" class="tsd-kind-icon">Server</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/channelevents.html" class="tsd-kind-icon">Channel<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientconnectoptions.html" class="tsd-kind-icon">Client<wbr>Connect<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/clientevents.html" class="tsd-kind-icon">Client<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/servermessageevents.html" class="tsd-kind-icon">Server<wbr>Message<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#channelencoding" class="tsd-kind-icon">Channel<wbr>Encoding</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#extensions" class="tsd-kind-icon">Extensions</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#messages" class="tsd-kind-icon">Messages</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#authchallenge" class="tsd-kind-icon">Auth<wbr>Challenge</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#autherror" class="tsd-kind-icon">Auth<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#authresponse" class="tsd-kind-icon">Auth<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#castmessage" class="tsd-kind-icon">Cast<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#deviceauthmessage" class="tsd-kind-icon">Device<wbr>Auth<wbr>Message</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

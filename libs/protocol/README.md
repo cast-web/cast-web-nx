@@ -36,7 +36,7 @@ import {
   HeartbeatChannel,
   ReceiverChannel,
   Namespaces,
-} from 'cast-protocol/lib/protocol/google-cast';
+} from '@cast-web/types';
 
 const client = new Client();
 // wait for the client to connect
