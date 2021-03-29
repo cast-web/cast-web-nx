@@ -1,6 +1,6 @@
 {
   "name": "cast-web",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "license": "MIT",
   "scripts": {
     "nx": "nx",
@@ -23,7 +23,8 @@
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "semantic-release": "semantic-release"
   },
   "private": true,
   "dependencies": {
@@ -39,11 +40,15 @@
     "@nrwl/node": "11.5.1",
     "@nrwl/tao": "11.5.1",
     "@nrwl/workspace": "11.5.1",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/release-notes-generator": "^9.0.2",
     "@types/chromecast-caf-receiver": "^5.0.13",
     "@types/jest": "26.0.8",
     "@types/node": "12.12.38",
     "@typescript-eslint/eslint-plugin": "4.3.0",
     "@typescript-eslint/parser": "4.3.0",
+    "conventional-changelog-conventionalcommits": "^4.5.0",
     "dotenv": "6.2.0",
     "eslint": "7.10.0",
     "eslint-config-airbnb-base": "^14.2.1",
@@ -52,9 +57,16 @@
     "jest": "26.2.2",
     "mocha": "^3.2.0",
     "prettier": "2.2.1",
+    "semantic-release": "^17.4.2",
+    "semantic-release-cli": "^5.4.3",
+    "semantic-release-plus": "^18.2.5",
     "ts-jest": "26.4.0",
     "ts-node": "~9.1.1",
     "typedoc": "^0.20.34",
     "typescript": "~4.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cast-web/cast-web-nx.git"
   }
 }

@@ -1,9 +1,12 @@
 {
   "name": "@cast-web/protocol",
-  "version": "0.2.0",
+  "version": "0.0.0-development",
   "description": "An implementation of the Google Cast protocol v2",
   "author": "thibauts",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/thibauts/node-castv2.git"
