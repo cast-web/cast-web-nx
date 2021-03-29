@@ -1,0 +1,38 @@
+name: Release
+on:
+  push:
+    branches:
+      - master
+      - beta
+      - next
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v2
+
+      - name: Set Node.js 10.x  🔐
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: yarn install 💾
+        run: yarn install
+      
+      - name: yarn test 🧪
+        run: yarn test
+
+      - name: yarn build affected 🔧
+        run: yarn affected:build
+
+      - name: Release all the things! ☁️🚀
+        run: yarn affected:release
+

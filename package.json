@@ -16,6 +16,7 @@
     "affected:test": "nx affected:test",
     "affected:lint": "nx affected:lint",
     "affected:dep-graph": "nx affected:dep-graph",
+    "affected:release": "nx affected --target=release",
     "affected": "nx affected",
     "format": "nx format:write",
     "format:write": "nx format:write",
