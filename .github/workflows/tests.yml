@@ -32,6 +32,8 @@ jobs:
     needs: [dependencies]
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v1
         with:
           node-version: 12
@@ -44,4 +46,4 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Run tests 🧪
-        run: yarn nx run-many --target=test --all
+        run: yarn affected:test
