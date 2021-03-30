@@ -78,7 +78,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Run code linter ⌨🧹
-        run: yarn lint
+        run: yarn lint:nx:all
 
       - name: Run commit message linter 💬🧹
         run: yarn lint:last-commit-message

@@ -958,6 +958,7 @@ declare module cast.receiver.media {
      * Registers an API that the player should call when there is an error.
      *      * @param errorCallback The callback method called when the player has an error.
      */
+    /* eslint-disable @typescript-eslint/ban-types */
     registerErrorCallback(errorCallback: (err: Object) => void): void;
 
     /**
