@@ -24,7 +24,7 @@ jobs:
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: node_modules # !WARN does not work if running multiple node versions, instead use https://github.com/actions/cache/blob/master/examples.md#node---yarn
-          key: ${{ runner.os }}-yarn-$GITHUB_RUN_ID
+          key: ${{ runner.os }}-yarn-${{ github.run_id }}
 
       - name: Yarn install 💾
         if: steps.yarn-cache.outputs.cache-hit != 'true'
@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.os }}-yarn-${{ env.GITHUB_RUN_ID }}
+          key: ${{ runner.os }}-yarn-${{ github.run_id }}
       - name: Run tests 🧪
         run: yarn test
 
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.os }}-yarn-${{ env.GITHUB_RUN_ID }}
+          key: ${{ runner.os }}-yarn-${{ github.run_id }}
 
       - name: Run code linter ⌨🧹
         run: yarn lint
@@ -102,7 +102,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.os }}-yarn-${{ env.GITHUB_RUN_ID }}
+          key: ${{ runner.os }}-yarn-${{ github.run_id }}
 
       - name: yarn build affected 🔧
         run: yarn affected:build
