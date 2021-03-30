@@ -1,26 +1,36 @@
 import { Client, GenericMediaApplication } from '@cast-web/client';
+import { Namespaces } from '@cast-web/types';
 
 console.log("Hello World!");
 
 const run = (async () => {
-  const tobiasHome = new Client();
+  const myChromecast = new Client();
 
-  await tobiasHome.connect({ host: '192.168.0.84', port: 8009, rejectUnauthorized: false });
+  await myChromecast.connect({ host: '192.168.0.84', port: 8009, rejectUnauthorized: false });
 
-  tobiasHome.on('status', data => {
+  myChromecast.on('status', async data => {
     console.log('status:', data);
-    const session = data?.applications[0];
+    const session = (data?.applications || [])[0];
+
+    const test = Namespaces
+
     if (session?.sessionId) {
       console.log('join session:', session);
-      tobiasHome.join<GenericMediaApplication>(session, GenericMediaApplication, (error, application) => {
-        console.warn('joined! :', error, application);
-        application?.on('status', msg => console.error('on application message: ', msg));
-        setTimeout(() => application?.getStatus((err: any, status: any) => console.log('getStatus: ', err, status)), 5000);
-      })
+      const genericMediaApplication = await myChromecast.join<GenericMediaApplication>(session, GenericMediaApplication);
+      console.warn('joined! :', genericMediaApplication);
+      genericMediaApplication?.on('status', msg => console.error('on genericMediaApplication message: ', msg));
+      genericMediaApplication?.on('applicationClose', () => console.error('on genericMediaApplication applicationClose: '));
+      genericMediaApplication?.on('error', msg => console.error('on genericMediaApplication error: ', msg));
+      // setTimeout(() => genericMediaApplication.pause(), 5000);
+      // setTimeout(() => genericMediaApplication.play(), 10000);
+      // setTimeout(() => genericMediaApplication.stop(), 15000);
+      // setTimeout(() => genericMediaApplication.close(), 20000);
+      setTimeout(async () => myChromecast.stop(genericMediaApplication), 20000);
     }
   });
 
-  tobiasHome.on('error', (err: any) => {
+
+  myChromecast.on('error', (err: any) => {
     console.error('err:', err);
   });
 })();
